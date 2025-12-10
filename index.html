@@ -984,15 +984,14 @@ footer {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    padding: 10px;
-    height: calc(100% - 150px);
+    padding: 10px 0;
+    height: 50dvh;
     overflow-y: auto;
     width: 100%;
 }
 
 .chart-group {
     border-radius: 8px;
-    padding: 0 8px;
         display: block;
 
 
@@ -1292,7 +1291,7 @@ footer {
     border: var(--border2dark);
     background-color: var(--yellow-light);
     box-shadow: var(--shadow-orange);
-    height: 570px;
+    height: 90%;
 }
 
 .practice-section {
@@ -1976,6 +1975,10 @@ body {
     font-style: italic;
 }
 
+    .today-content{
+        height: 90%;
+
+    }
 
 
 /* AJUSTES PARA PANTALLAS MUY PEQUEÑAS (400px o menos) */
@@ -2022,14 +2025,7 @@ body {
         -webkit-overflow-scrolling: touch !important;
     }
     
-    /* Ajustar contenido dentro de las diapositivas */
-    .today-container,
-    .stats-container,
-    .practice-container {
-        height: 100% !important;
-        max-height: 100% !important;
-        overflow-y: auto !important;
-    }
+
     
     /* Reducir tamaño de texto y elementos */
     .today-title,
@@ -2038,11 +2034,11 @@ body {
         padding: 8px !important;
     }
     
-    .practice-status {
-        font-size: 1.2rem !important;
-        margin: 10px 0 !important;
+
+    .practice-container{
+        height: 73dvh;
+
     }
-    
     .namaste-title {
         font-size: 2rem !important;
     }
@@ -2057,12 +2053,18 @@ body {
     /* Ajustar botones */
     .go-to-history-btn,
     .correct-btn,
-    .incorrect-btn,
-    .show-answer-btn {
+    .incorrect-btn{
         padding: 8px 12px !important;
         font-size: 0.8rem !important;
         height: 35px !important;
     }
+
+    .show-answer-btn {
+        line-height: 1rem;
+
+
+    }
+
     
     /* Ajustar mood items */
     .mood-item {
@@ -2095,8 +2097,12 @@ body {
     
     /* Ajustar gráficos de estadísticas */
     .stats-chart {
-        height: 80px !important;
-        padding-bottom: 20px !important;
+        height: 95px !important;
+        padding: 20px 0 !important;
+    }
+
+    .series-subtitle {
+        padding-top: 0;
     }
     
     .chart-title {
@@ -2148,11 +2154,8 @@ body {
     }
     
     .asana-image-container {
-        max-height: 200px !important;
-    }
-    
-    .practice-asana-image {
-        max-height: 180px !important;
+        width: 100%;
+        max-height: 240px;
     }
     
     /* Reducir espaciado general */
@@ -2161,7 +2164,7 @@ body {
     }
     
     .current-date {
-        font-size: 0.8rem !important;
+        font-size: 0.7rem !important;
     }
     
     /* Ajustar period-buttons */
@@ -2178,21 +2181,17 @@ body {
 
 /* AJUSTES ESPECÍFICOS PARA ALTURAS CORTAS */
 @media screen and (max-height: 700px) {
-    .practice-container {
-        padding: 5px 10px !important;
-    }
-    
-    .asana-image-container {
-        max-height: 150px !important;
-    }
-    
-    .practice-asana-image {
-        max-height: 140px !important;
-    }
+
     
     .practice-status {
         margin: 8px 0 !important;
     }
+
+    .study-stat-label, .study-stat-value, .practice-status {
+    font-size: 1rem;
+    }
+
+
 }
 
 /* Asegurar que los elementos con scroll funcionen bien en móviles */
@@ -2209,6 +2208,9 @@ body {
     select,
     textarea {
         font-size: 16px !important; /* Prevenir zoom automático en iOS */
+    }
+        .today-header {
+    padding: 6px;
     }
 }
 
@@ -3503,11 +3505,7 @@ statsSummary.innerHTML = `
         </div>
         
         <div class="study-stat-value" style="border-bottom: 1px solid var(--bordo); padding-bottom: 5px; color: var(--bordo);">
-            ${averageText} días/semana
-        </div>
-        
-        <div style="font-size: 0.8rem; color: var(--blue); text-align: center; padding: 5px 0;">
-            ${spCount} días de SP
+            ${averageText} días/semana - ${spCount} días de SP
         </div>
     </div>
 `;
@@ -4321,12 +4319,12 @@ function showAsanaModal(asana) {
                 ` : ''}
                 ${asana.before ? `
                 <div class="asana-detail-row">
-                    <span class="asana-detail-label">Antes:</span> ${processLinks(asana.before)}
+                    <span class="asana-detail-label">Siguiente:</span> ${processLinks(asana.before)}
                 </div>
                 ` : ''}
                 ${asana.after ? `
                 <div class="asana-detail-row">
-                    <span class="asana-detail-label">Después:</span> ${processLinks(asana.after)}
+                    <span class="asana-detail-label">Previa:</span> ${processLinks(asana.after)}
                 </div>
                 ` : ''}
             </div>
