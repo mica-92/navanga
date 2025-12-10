@@ -1976,6 +1976,245 @@ body {
     font-style: italic;
 }
 
+
+
+/* AJUSTES PARA PANTALLAS MUY PEQUEÑAS (400px o menos) */
+@media screen and (max-width: 400px) {
+    /* Ajustar body para pantalla pequeña */
+    body {
+        width: 100%;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+    
+    /* Header más compacto */
+    header {
+        height: 50px !important;
+        padding: 5px 10px !important;
+    }
+    
+    .anu-text {
+        font-size: 2rem !important;
+    }
+    
+    .anu-image img {
+        width: 40px !important;
+        height: 40px !important;
+    }
+    
+    /* Ajustar contenedor principal */
+    .app-container {
+        padding-top: 50px !important;
+        padding-bottom: 40px !important;
+        height: 100dvh !important; /* 50px header + 40px footer */
+    }
+    
+    /* Ajustar carrusel */
+    .carousel-container {
+        height: 100% !important;
+    }
+    
+    .carousel-slide {
+        padding: 5px !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
+    /* Ajustar contenido dentro de las diapositivas */
+    .today-container,
+    .stats-container,
+    .practice-container {
+        height: 100% !important;
+        max-height: 100% !important;
+        overflow-y: auto !important;
+    }
+    
+    /* Reducir tamaño de texto y elementos */
+    .today-title,
+    .section-title {
+        font-size: 1rem !important;
+        padding: 8px !important;
+    }
+    
+    .practice-status {
+        font-size: 1.2rem !important;
+        margin: 10px 0 !important;
+    }
+    
+    .namaste-title {
+        font-size: 2rem !important;
+    }
+    
+    /* Ajustar practice-box */
+    .practice-box {
+        padding: 8px !important;
+        margin: 8px auto !important;
+        font-size: 1rem !important;
+    }
+    
+    /* Ajustar botones */
+    .go-to-history-btn,
+    .correct-btn,
+    .incorrect-btn,
+    .show-answer-btn {
+        padding: 8px 12px !important;
+        font-size: 0.8rem !important;
+        height: 35px !important;
+    }
+    
+    /* Ajustar mood items */
+    .mood-item {
+        width: 30px !important;
+        height: 30px !important;
+    }
+    
+    /* Ajustar footer */
+    footer {
+        height: 40px !important;
+        padding: 0 10px !important;
+    }
+    
+    .footer-text {
+        font-size: 0.7rem !important;
+    }
+    
+    .carousel-arrow {
+        width: 25px !important;
+        height: 25px !important;
+        font-size: 1rem !important;
+    }
+    
+    /* Ajustar modal para pantalla pequeña */
+    .modal-content {
+        width: 95% !important;
+        max-width: 95% !important;
+        max-height: 85vh !important;
+    }
+    
+    /* Ajustar gráficos de estadísticas */
+    .stats-chart {
+        height: 80px !important;
+        padding-bottom: 20px !important;
+    }
+    
+    .chart-title {
+        font-size: 0.8rem !important;
+        margin-bottom: 10px !important;
+    }
+    
+    /* Ajustar lista de asanas */
+    .asana-item {
+        padding: 8px !important;
+        margin-bottom: 5px !important;
+    }
+    
+    .asana-sanskrit {
+        font-size: 0.8rem !important;
+    }
+    
+    /* Ajustar historial */
+    .history-entry {
+        padding: 8px !important;
+        margin: 8px auto !important;
+    }
+    
+    .history-date {
+        font-size: 0.9rem !important;
+    }
+    
+    /* Ajustar formulario de registro */
+    .log-container {
+        padding: 10px !important;
+    }
+    
+    .notes-textarea {
+        min-height: 80px !important;
+    }
+    
+    /* Asegurar que todo el contenido sea scrollable */
+    .carousel-slide,
+    .log-history,
+    .asanas-list,
+    .today-content {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
+    /* Ajustar el asana-practice-card */
+    .asana-practice-card {
+        gap: 10px !important;
+    }
+    
+    .asana-image-container {
+        max-height: 200px !important;
+    }
+    
+    .practice-asana-image {
+        max-height: 180px !important;
+    }
+    
+    /* Reducir espaciado general */
+    .current-datetime {
+        margin-bottom: 5px !important;
+    }
+    
+    .current-date {
+        font-size: 0.8rem !important;
+    }
+    
+    /* Ajustar period-buttons */
+    .period-buttons {
+        margin: 10px !important;
+        gap: 3px !important;
+    }
+    
+    .period-btn {
+        padding: 6px 8px !important;
+        font-size: 0.7rem !important;
+    }
+}
+
+/* AJUSTES ESPECÍFICOS PARA ALTURAS CORTAS */
+@media screen and (max-height: 700px) {
+    .practice-container {
+        padding: 5px 10px !important;
+    }
+    
+    .asana-image-container {
+        max-height: 150px !important;
+    }
+    
+    .practice-asana-image {
+        max-height: 140px !important;
+    }
+    
+    .practice-status {
+        margin: 8px 0 !important;
+    }
+}
+
+/* Asegurar que los elementos con scroll funcionen bien en móviles */
+.log-history,
+.asanas-list,
+.carousel-slide {
+    /* Mejorar rendimiento del scroll en iOS */
+    -webkit-overflow-scrolling: touch !important;
+}
+
+/* Prevenir zoom en inputs en iOS */
+@media screen and (max-width: 400px) {
+    input,
+    select,
+    textarea {
+        font-size: 16px !important; /* Prevenir zoom automático en iOS */
+    }
+}
+
+
+
+
 </style>
 </head>
 
@@ -2327,7 +2566,6 @@ body {
         </div>
     </div>
 </div>
-
 
 <!-- AGREGAR ESTE MODAL NUEVO AL FINAL DEL BODY -->
 <div class="modal" id="log-modal">
