@@ -3388,6 +3388,72 @@ function getTotalValidEntries(entries) {
     return validDays.size;
 }
 
+
+function calculateWeeklyPracticeAverage(entries) {
+    // Agrupar entradas por semana (ISO week)
+    const weeksMap = new Map();
+    
+    entries.forEach(entry => {
+        const entryDate = new Date(entry.date);
+        // Obtener año y semana ISO
+        const year = entryDate.getFullYear();
+        const weekNumber = getISOWeek(entryDate);
+        const weekKey = `${year}-W${weekNumber.toString().padStart(2, '0')}`;
+        
+        // Solo considerar días de lunes a viernes (1-5 en JS, donde 0=Domingo, 1=Lunes, etc.)
+        const dayOfWeek = entryDate.getDay();
+        if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+            // Verificar si es práctica (no SP)
+            const isSpecialPractice = entry.moods && entry.moods.some(mood => 
+                mood.name === 'special practice'
+            );
+            
+            if (!isSpecialPractice && entry.practiced) {
+                if (!weeksMap.has(weekKey)) {
+                    weeksMap.set(weekKey, {
+                        year: year,
+                        week: weekNumber,
+                        practiceDays: new Set(),
+                        total: 0
+                    });
+                }
+                
+                const weekData = weeksMap.get(weekKey);
+                const dateStr = entryDate.toDateString();
+                if (!weekData.practiceDays.has(dateStr)) {
+                    weekData.practiceDays.add(dateStr);
+                    weekData.total = weekData.practiceDays.size;
+                }
+            }
+        }
+    });
+    
+    // Convertir a array y ordenar
+    const weeks = Array.from(weeksMap.values()).sort((a, b) => {
+        if (a.year !== b.year) return a.year - b.year;
+        return a.week - b.week;
+    });
+    
+    if (weeks.length === 0) return 0;
+    
+    // Calcular promedio
+    const totalPractices = weeks.reduce((sum, week) => sum + week.total, 0);
+    return totalPractices / weeks.length;
+}
+
+// Función auxiliar para obtener semana ISO
+function getISOWeek(date) {
+    const target = new Date(date.valueOf());
+    const dayNr = (date.getDay() + 6) % 7; // Hacer lunes=0, domingo=6
+    target.setDate(target.getDate() - dayNr + 3);
+    const firstThursday = target.valueOf();
+    target.setMonth(0, 1);
+    if (target.getDay() !== 4) {
+        target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+    }
+    return 1 + Math.ceil((firstThursday - target) / 604800000); // 604800000 = 7 días en ms
+}
+
 function updateStatistics() {
     const today = new Date();
     const statsSummary = document.getElementById('stats-summary');
@@ -3420,33 +3486,39 @@ function updateStatistics() {
             daysWithPractice.add(dateStr);
         }
     });
+
+    // Obtener promedio para el período actual
+const weeklyAverage = calculateWeeklyPracticeAverage(filteredEntries);
+const averageText = weeklyAverage > 0 ? weeklyAverage.toFixed(1) : '0';
     
     const practiceCount = daysWithPractice.size;
     const spCount = daysWithSpecialPractice.size; // Contador de SP
     const totalValidEntries = getTotalValidEntries(filteredEntries);
     const practiceRatio = totalValidEntries > 0 ? (practiceCount / totalValidEntries) * 100 : 0;
     
-    // Mostrar estadísticas
-    statsSummary.innerHTML = `
-        <div class="study-stats">
-            <div class="study-stat-label" style="border-top: 1px solid var(--bordo); padding-top: 5px; color: var(--bordo);">
-                ${getPeriodDisplayName(currentPeriod)}
-            </div>
-            
-            <div class="study-stat-value" style="border-bottom: 1px solid var(--bordo); padding-bottom: 5px; color: var(--bordo);">
-                ${practiceCount}/${totalValidEntries} días de práctica
-                - ${practiceRatio.toFixed(1)}%
-            </div>
-            
-            <div style="font-size: 0.8rem; color: var(--blue); text-align: center; padding: 5px 0;">
-                ${spCount} días de SP
-            </div>
+statsSummary.innerHTML = `
+    <div class="study-stats">
+        <div class="study-stat-label" style="border-top: 1px solid var(--bordo); padding-top: 5px; color: var(--bordo);">
+            ${getPeriodDisplayName(currentPeriod)}
         </div>
-    `;
+        
+        <div class="study-stat-value" style="border-bottom: 1px solid var(--bordo); padding-bottom: 5px; color: var(--bordo);">
+            ${averageText} días/semana
+        </div>
+        
+        <div style="font-size: 0.8rem; color: var(--blue); text-align: center; padding: 5px 0;">
+            ${spCount} días de SP
+        </div>
+    </div>
+`;
+
     
     // Actualizar gráficos
     updateCharts(filteredEntries);
 }
+
+
+
 function filterEntriesByPeriod(entries, period) {
     const today = new Date();
     
@@ -4035,7 +4107,7 @@ function displayAsanasList() {
             asanasHTML += `
                 <div class="series-subtitle">
                     <span class="series-subtitle-text">${getSeriesDisplayName(group.series)}</span>
-                    <span class="series-count">${group.asanas.length} asanas</span>
+                    <br><span class="series-count">${group.asanas.length} asanas</span>
                 </div>
             `;
             
@@ -4053,7 +4125,7 @@ function displayAsanasList() {
         asanasHTML += `
             <div class="series-subtitle">
                 <span class="series-subtitle-text">${getSeriesDisplayName(currentSeriesFilter)}</span>
-                <span class="series-count">${filteredAsanas.length} asanas</span>
+                <br><span class="series-count">${filteredAsanas.length} asanas</span>
             </div>
         `;
         
