@@ -47,13 +47,13 @@ header{
 footer{
   position:fixed;bottom:0;left:0;right:0;height:var(--footer-h);
   background:var(--yellow);border-top:var(--b2);
-  display:flex;align-items:center;justify-content:center;
+  display:flex;align-items:center;justify-content:right;
   padding:0 80px 0 20px;z-index:900;
 }
-.footer-credit{font-size:0.65rem;color:#333;text-align:center;}
+.footer-credit{font-size:0.8rem;color:#333;text-align:center;}
 @media(max-width:640px){
   main{padding-left:10px;padding-right:10px;}
-  .footer-credit{font-size:.58rem;text-align:right;}
+  .footer-credit{font-size:.78rem;text-align:right;}
 }
 
 /* ── EDIT-ONLY (PIN gated) ── */
@@ -69,7 +69,7 @@ body.unlocked .edit-only{display:revert!important;}
   box-shadow:4px 4px 0 rgba(0,0,0,.25);
   transition:transform .15s,background .15s;position:relative;z-index:1001;
 }
-.burger-btn:hover{background:var(--yellow);}
+.burger-btn:hover{background:var(--bordo);}
 .burger-btn.open{transform:rotate(90deg);background:var(--yellow);}
 .menu-items{
   position:absolute;bottom:60px;left:0;
@@ -482,7 +482,6 @@ main{
       </div>
     </div>
     <div class="clinic-wrap">
-      <div style="font-size:.72rem;color:var(--green6);text-transform:uppercase;margin-bottom:8px;">NOMBRA EL ĀSANA — PARA EL CRECIMIENTO ON & OFF THE MAT</div>
       <div class="clinic-img-wrap">
         <img id="practice-asana-image" class="practice-asana-image" alt="Asana">
         <div class="series-circle" id="practice-series-circle"></div>
@@ -1002,7 +1001,7 @@ function updateTodayCard(){
   const entries=logHistory.filter(e=>new Date(e.date).toDateString()===todayStr);
   entries.sort((a,b)=>new Date(b.date)-new Date(a.date));
   const entry=entries[0]||null;
-  let html=`<div class="namaste-title"><i class="fa-solid fa-hands-praying"></i> NAMASTE</div>
+  let html=`<div class="namaste-title"><i class="fa-solid fa-hands-praying"></i> NAMASTE MICA </div>
     <div class="date-label">${dateLabel} — ${timeLabel}</div>`;
   if(entry){
     const st=getPState(entry);
