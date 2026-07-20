@@ -6,294 +6,146 @@
 <title>Navāṅga</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 640'><path d='M201.7 291.5C236 310.2 266.2 335.6 290.5 366C301.6 379.9 311.5 394.9 319.9 410.8C328.4 394.9 338.2 380 349.3 366C373.6 335.5 403.8 310.1 438.1 291.5C479.8 268.8 527.5 256 577.8 256L587.7 256C598.8 256 607.8 265 607.8 276.1C607.8 424.1 487.9 544 339.9 544L299.7 544C151.9 544 32 424.1 32 276.1C32 265 41 256 52.1 256L62 256C112.4 256 160.1 268.8 201.7 291.5zM335.9 102C352.8 117.9 397.3 165.4 424.9 244.3C384.8 264.5 349.1 292.5 320 326.4C290.8 292.5 255.2 264.6 215.1 244.3C242.7 165.4 287.3 117.9 304.1 102C308.4 97.9 314.1 96 320 96C325.9 96 331.6 98 335.9 102z'/></svg>">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* ── TOKENS ── */
-:root {
-  --orange:#f6732f; --yellow:#f8dc3d; --yellow-light:#f3f62f20;
-  --green:#a6b39a;  --green6:#515b44; --light:#feeed5;
-  --red:#f6442f;    --blue:#2f49f6;   --bordo:rgb(188,71,73);
-  --b1:1px solid #333; --b2:2px solid #333; --b3:3px solid #333;
-  --header-h:52px;  --footer-h:48px;
+:root{
+  --orange:#f6732f;--yellow:#f8dc3d;--yl:#f3f62f20;
+  --green:#a6b39a;--green6:#515b44;--light:#feeed5;
+  --red:#f6442f;--blue:#2f49f6;--bordo:rgb(188,71,73);
+  --b1:1px solid #333;--b2:2px solid #333;--b3:3px solid #333;
+  --hh:52px;--fh:48px;
 }
-
-/* ── RESET ── */
 *{margin:0;padding:0;box-sizing:border-box;font-family:"Inconsolata",monospace;}
 *,*::before,*::after{cursor:default!important;user-select:none!important;-webkit-user-select:none!important;}
-button,a,[role="button"],.mood-item,.asana-item,.period-btn,.series-filter,
+button,a,[role="button"],.mood-btn,.asana-item,.period-btn,.series-filter,
 .icon-btn,.show-answer-btn,.correct-btn,.incorrect-btn,.filter-mood-item,
-.tag,.asana-tag,.asana-link,.go-btn{cursor:pointer!important;}
+.tag,.asana-tag,.asana-link,.go-btn,.link-open-btn,.practice-cycle-btn,
+.completeness-btn,.style-btn{cursor:pointer!important;}
 input,textarea,select{cursor:text!important;user-select:text!important;-webkit-user-select:text!important;font-size:16px!important;}
 img{pointer-events:none;-webkit-user-drag:none;}
 
 /* ── LAYOUT ── */
 body{background:#f6732f15;color:#333;min-height:100dvh;overflow-x:hidden;}
-header{
-  position:fixed;top:0;left:0;right:0;height:var(--header-h);
-  background:var(--orange);border-bottom:var(--b2);
-  display:flex;align-items:center;justify-content:center;z-index:900;padding:0 16px;
-}
+header{position:fixed;top:0;left:0;right:0;height:var(--hh);background:var(--orange);border-bottom:var(--b2);display:flex;align-items:center;justify-content:center;z-index:900;padding:0 16px;}
 .header-inner{display:flex;align-items:center;gap:10px;width:100%;max-width:640px;}
 .line{flex:1;height:2px;background:#333;}
 .site-title{font-size:2rem;color:#333;text-transform:uppercase;white-space:nowrap;}
+.lock-btn{width:30px;height:30px;border-radius:50%;border:var(--b2);background:#333;color:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
+.lock-btn.unlocked{background:var(--green6);color:#fff;}
+footer{position:fixed;bottom:0;left:0;right:0;height:var(--fh);background:var(--yellow);border-top:var(--b2);display:flex;align-items:center;justify-content:center;padding:0 80px 0 20px;z-index:900;}
+.footer-credit{font-size:.65rem;color:#333;text-align:center;}
+main{max-width:600px;margin:0 auto;padding:calc(var(--hh)+16px) 16px calc(var(--fh)+16px);scrollbar-width:thin;scrollbar-color:var(--bordo) transparent;}
+@media(max-width:640px){main{padding-left:10px;padding-right:10px;}.footer-credit{font-size:.55rem;text-align:right;}}
 
-/* ── FOOTER (credit only) ── */
-footer{
-  position:fixed;bottom:0;left:0;right:0;height:var(--footer-h);
-  background:var(--yellow);border-top:var(--b2);
-  display:flex;align-items:center;justify-content:center;
-  padding:0 80px 0 20px;z-index:900;
-}
-.footer-credit{font-size:0.65rem;color:#333;text-align:center;}
-@media(max-width:640px){
-  main{padding-left:10px;padding-right:10px;}
-  .footer-credit{font-size:.58rem;text-align:right;}
-}
-
-/* ── BURGER FLOATING MENU ── */
+/* ── BURGER ── */
 .floating-menu{position:fixed;bottom:6px;left:12px;z-index:1000;}
-.burger-btn{
-  width:52px;height:52px;border-radius:50%;
-  background:var(--orange);border:3px solid #333;color:#333;
-  font-size:20px;display:flex;align-items:center;justify-content:center;
-  box-shadow:4px 4px 0 rgba(0,0,0,.25);
-  transition:transform .15s,background .15s;position:relative;z-index:1001;
-}
+.burger-btn{width:52px;height:52px;border-radius:50%;background:var(--orange);border:3px solid #333;color:#333;font-size:20px;display:flex;align-items:center;justify-content:center;box-shadow:4px 4px 0 rgba(0,0,0,.25);transition:transform .15s,background .15s;position:relative;z-index:1001;}
 .burger-btn:hover{background:var(--yellow);}
 .burger-btn.open{transform:rotate(90deg);background:var(--yellow);}
-.menu-items{
-  position:absolute;bottom:60px;left:0;
-  display:flex;flex-direction:column-reverse;gap:8px;
-  opacity:0;pointer-events:none;
-  transform:translateY(8px);transition:opacity .2s,transform .2s;
-}
+.menu-items{position:absolute;bottom:60px;left:0;display:flex;flex-direction:column-reverse;gap:8px;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .2s,transform .2s;}
 .menu-items.open{opacity:1;pointer-events:all;transform:translateY(0);}
 .menu-item{display:flex;align-items:center;gap:8px;white-space:nowrap;}
-.menu-item-btn{
-  width:40px;height:40px;border-radius:50%;border:2px solid #333;
-  background:var(--green6);color:#fff;font-size:15px;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:3px 3px 0 rgba(0,0,0,.2);transition:background .15s;flex-shrink:0;
-}
+.menu-item-btn{width:40px;height:40px;border-radius:50%;border:2px solid #333;background:var(--green6);color:#fff;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 rgba(0,0,0,.2);transition:background .15s;flex-shrink:0;}
 .menu-item-btn:hover,.menu-item-btn.active{background:var(--bordo);}
-.menu-item-label{
-  background:#333;color:var(--light);padding:3px 9px;
-  font-size:.72rem;font-weight:bold;border-radius:3px;
-  text-transform:uppercase;letter-spacing:.5px;
-}
-
-/* ── KARAṆḌA LINK CARDS ── */
-.link-card{
-  background:rgba(47,73,246,.05);border:2px solid var(--blue);
-  border-radius:4px;padding:10px 12px;margin-bottom:10px;
-  display:flex;align-items:center;gap:10px;
-}
-.link-card-info{flex:1;min-width:0;}
-.link-card-name{font-weight:bold;font-size:.9rem;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.link-card-theme{font-size:.72rem;color:var(--blue);text-transform:uppercase;margin-top:2px;}
-.link-card-actions{display:flex;gap:5px;flex-shrink:0;}
-.link-open-btn{
-  padding:5px 10px;background:var(--blue);color:#fff;border:var(--b1);
-  border-radius:3px;font-size:.75rem;font-weight:bold;
-  font-family:"Inconsolata",monospace;transition:background .15s;
-}
-.link-open-btn:hover{background:#1e35d4;}
-
-/* ── MAIN CONTAINER ── */
-main{
-  max-width:600px;margin:0 auto;
-  padding:calc(var(--header-h) + 16px) 16px calc(var(--footer-h) + 16px);
-  scrollbar-width:thin;scrollbar-color:var(--bordo) transparent;
-}
+.menu-item-label{background:#333;color:var(--light);padding:3px 9px;font-size:.72rem;font-weight:bold;border-radius:3px;text-transform:uppercase;letter-spacing:.5px;}
 
 /* ── PAGES ── */
-.page{display:none;}
-.page.active{display:block;}
+.page{display:none;}.page.active{display:block;}
 
-/* ── SECTION TOPBAR ── */
-.topbar{
-  background:var(--bordo);border:var(--b2);
-  padding:10px 14px;
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:14px;
-}
-.topbar-title{font-weight:bold;font-size:0.9rem;text-transform:uppercase;color:var(--light);letter-spacing:.5px;}
+/* ── TOPBAR ── */
+.topbar{background:var(--bordo);border:var(--b2);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.topbar-title{font-weight:bold;font-size:.9rem;text-transform:uppercase;color:var(--light);letter-spacing:.5px;}
 .topbar-actions{display:flex;gap:6px;}
-
-/* ── ICON BUTTONS ── */
-.icon-btn{
-  width:28px;height:28px;border-radius:50%;
-  border:var(--b2);background:var(--green6);color:#fff;
-  display:flex;align-items:center;justify-content:center;font-size:0.8rem;
-  transition:background .15s;flex-shrink:0;
-}
+.icon-btn{width:28px;height:28px;border-radius:50%;border:var(--b2);background:var(--green6);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:background .15s;flex-shrink:0;}
 .icon-btn:hover{background:var(--yellow);color:#333;}
+.icon-btn.locked-hide{display:none;}
+
+/* ── TODAY ── */
+.namaste-title{font-size:1.6rem;color:var(--green6);font-weight:800;margin-bottom:6px;}
+.date-label{font-size:.75rem;color:var(--green6);text-transform:uppercase;border-bottom:var(--b1);padding-bottom:5px;margin-bottom:10px;}
+.practice-box{background:rgba(188,71,73,.08);border:2px solid var(--bordo);border-radius:4px;padding:10px 12px;margin-bottom:12px;}
+.practice-status{font-size:1rem;font-weight:bold;color:var(--green6);text-transform:uppercase;border-bottom:var(--b1);padding-bottom:6px;margin-bottom:8px;}
+.moon-box{background:rgba(47,73,246,.08);border:2px solid var(--blue);border-radius:4px;padding:10px 12px;margin-bottom:12px;}
+.moon-box-title{font-weight:bold;font-size:.8rem;color:var(--blue);border-bottom:1px solid var(--blue);padding-bottom:4px;margin-bottom:6px;}
+.moon-row{display:flex;gap:8px;align-items:center;font-size:.85rem;color:var(--blue);}
+.detail{font-size:.82rem;margin:5px 0;}.detail strong{color:var(--bordo);}
+.mood-chip{width:26px;height:26px;border-radius:50%;border:2px solid #333;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.85);font-size:.7rem;}
 
 /* ── PERIOD PILLS ── */
 .period-pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px;}
-.period-btn{
-  padding:5px 10px;border:var(--b1);border-radius:14px;
-  background:var(--green);color:var(--green6);
-  font-size:0.72rem;font-weight:bold;transition:background .15s;
-}
+.period-btn{padding:5px 10px;border:var(--b1);border-radius:14px;background:var(--green);color:var(--green6);font-size:.72rem;font-weight:bold;transition:background .15s;}
 .period-btn.active,.period-btn:hover{background:var(--green6);color:#fff;}
 
-/* ── PRACTICE BOX (today) ── */
-.practice-box{
-  background:rgba(188,71,73,.08);border:2px solid var(--bordo);
-  border-radius:4px;padding:10px 12px;margin-bottom:12px;
-}
-.practice-status{
-  font-size:1rem;font-weight:bold;color:var(--green6);
-  text-transform:uppercase;border-bottom:var(--b1);
-  padding-bottom:6px;margin-bottom:8px;
-}
-.moon-box{
-  background:rgba(47,73,246,.08);border:2px solid var(--blue);
-  border-radius:4px;padding:10px 12px;margin-bottom:12px;
-}
-.moon-box-title{font-weight:bold;font-size:.8rem;color:var(--blue);border-bottom:1px solid var(--blue);padding-bottom:4px;margin-bottom:6px;}
-.moon-row{display:flex;gap:8px;align-items:center;font-size:.85rem;color:var(--blue);}
-.namaste-title{font-size:1.6rem;color:var(--green6);font-weight:800;margin-bottom:6px;}
-.date-label{font-size:.75rem;color:var(--green6);text-transform:uppercase;border-bottom:var(--b1);padding-bottom:5px;margin-bottom:10px;}
-.detail{font-size:.82rem;margin:5px 0;}
-.detail strong{color:var(--bordo);}
-
 /* ── STATS ── */
-.stats-summary{
-  font-size:.85rem;color:var(--bordo);border:1px solid var(--bordo);
-  background:rgba(188,71,73,.08);padding:6px 10px;
-  border-radius:4px;margin-bottom:12px;text-align:center;
-}
-.charts-wrap{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
-.chart-title{
-  font-size:.75rem;font-weight:bold;color:var(--bordo);
-  background:rgba(188,71,73,.12);border:1px solid var(--bordo);
-  padding:3px 8px;border-radius:3px;margin-bottom:6px;text-align:center;
-}
-.stats-chart{
-  width:100%;height:80px;display:flex;align-items:flex-end;
-  gap:3px;padding-bottom:22px;
-}
-.chart-bar{
-  flex:1;background:var(--green6);border:1px solid #333;
-  position:relative;min-height:4px;transition:background .2s;max-height:58px;
-}
+.stats-summary{font-size:.85rem;color:var(--bordo);border:1px solid var(--bordo);background:rgba(188,71,73,.08);padding:6px 10px;border-radius:4px;margin-bottom:12px;text-align:center;}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.chart-full{grid-column:1/-1;}
+.chart-title{font-size:.72rem;font-weight:bold;color:var(--bordo);background:rgba(188,71,73,.12);border:1px solid var(--bordo);padding:3px 8px;border-radius:3px;margin-bottom:6px;text-align:center;}
+.stats-chart{width:100%;height:75px;display:flex;align-items:flex-end;gap:3px;padding-bottom:20px;}
+.chart-bar{flex:1;background:var(--green6);border:1px solid #333;position:relative;min-height:4px;transition:background .2s;max-height:55px;}
 .chart-bar:hover{background:var(--yellow);}
-.chart-value{position:absolute;top:-15px;left:0;right:0;text-align:center;font-size:.55rem;font-weight:bold;}
-.chart-label{position:absolute;bottom:-20px;left:0;right:0;text-align:center;font-size:.55rem;}
-.chart-mood-circle{width:15px;height:15px;border-radius:50%;border:1px solid #333;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:.5rem;}
+.chart-value{position:absolute;top:-15px;left:0;right:0;text-align:center;font-size:.55rem;font-weight:bold;opacity:0;transition:opacity .15s;}
+.chart-bar:hover .chart-value{opacity:1;}
+.chart-label{position:absolute;bottom:-20px;left:0;right:0;text-align:center;font-size:.52rem;}
+.chart-mood-circle{width:14px;height:14px;border-radius:50%;border:1px solid #333;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:.48rem;}
 
-/* ── HISTORY ENTRIES ── */
-.history-entry{
-  background:rgba(188,71,73,.06);border:2px solid var(--bordo);
-  border-radius:4px;padding:10px 12px;margin-bottom:10px;
-}
+/* ── HISTORY ── */
+.history-entry{background:rgba(188,71,73,.06);border:2px solid var(--bordo);border-radius:4px;padding:10px 12px;margin-bottom:10px;}
 .entry-header{display:flex;justify-content:space-between;align-items:center;border-bottom:var(--b1);padding-bottom:6px;margin-bottom:8px;}
 .entry-date{font-weight:bold;font-size:.95rem;color:var(--bordo);}
 .entry-actions{display:flex;gap:5px;}
-.mood-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;}
-.practice-dot{
-  width:28px;height:28px;border-radius:50%;border:var(--b2);
-  display:flex;align-items:center;justify-content:center;
-  color:#fff;font-weight:bold;font-size:.65rem;flex-shrink:0;
-}
-.practice-dot.yes{background:var(--green6);}
-.practice-dot.no{background:var(--red);}
-.mood-chip{
-  width:26px;height:26px;border-radius:50%;border:2px solid #333;
-  display:flex;align-items:center;justify-content:center;
-  color:rgba(255,255,255,.85);font-size:.7rem;
-}
+.mood-row{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:6px;}
+.practice-dot{width:28px;height:28px;border-radius:50%;border:var(--b2);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:.6rem;flex-shrink:0;}
+.pd-si{background:var(--green6);}
+.pd-no{background:var(--red);}
+.pd-sp{background:var(--blue);}
+.pd-moon{background:#ced4da;color:#333;}
 
-/* ── TAGS & CHIPS ── */
-.tag,.asana-tag{
-  display:inline-block;background:var(--green6);border:var(--b1);
-  padding:2px 7px;font-size:.75rem;border-radius:3px;
-  text-transform:uppercase;color:#fff;margin:2px;
-}
+/* ── TAGS ── */
+.tag,.asana-tag{display:inline-block;background:var(--green6);border:var(--b1);padding:2px 7px;font-size:.75rem;border-radius:3px;text-transform:uppercase;color:#fff;margin:2px;}
 
-/* ── ĀSANA CLINIC ── */
+/* ── CLINIC ── */
 .clinic-wrap{margin-bottom:20px;}
-.clinic-img-wrap{
-  position:relative;width:100%;max-width:280px;
-  aspect-ratio:1;display:flex;align-items:center;justify-content:center;
-  margin:0 auto 10px;
-}
-.practice-asana-image{
-  max-width:100%;max-height:100%;object-fit:contain;
-  border:var(--b2);filter:hue-rotate(180deg);
-}
-.series-circle{
-  position:absolute;top:6px;right:6px;width:24px;height:24px;
-  border-radius:50%;background:var(--blue);border:var(--b1);
-  display:flex;align-items:center;justify-content:center;
-  color:#fff;font-size:.65rem;font-weight:bold;
-}
-.show-answer-btn,.sanskrit-name{
-  width:100%;padding:8px 12px;border:2px solid var(--green6);
-  background:var(--light);color:var(--green6);font-weight:bold;
-  font-family:"Inconsolata",monospace;font-size:.85rem;
-  border-radius:3px;text-align:center;margin-bottom:8px;display:block;
-}
+.clinic-img-wrap{position:relative;width:100%;max-width:280px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;}
+.practice-asana-image{max-width:100%;max-height:100%;object-fit:contain;border:var(--b2);filter:hue-rotate(180deg);}
+.series-circle{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;background:var(--blue);border:var(--b1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.65rem;font-weight:bold;}
+.show-answer-btn,.sanskrit-name{width:100%;padding:8px 12px;border:2px solid var(--green6);background:var(--light);color:var(--green6);font-weight:bold;font-family:"Inconsolata",monospace;font-size:.85rem;border-radius:3px;text-align:center;margin-bottom:8px;display:block;}
 .clinic-controls{display:flex;gap:8px;}
-.correct-btn,.incorrect-btn{
-  flex:1;padding:8px;border:var(--b2);font-weight:bold;
-  font-size:.8rem;border-radius:3px;display:flex;
-  align-items:center;justify-content:center;gap:6px;
-  font-family:"Inconsolata",monospace;
-}
-.correct-btn{background:var(--green6);color:#fff;}
-.correct-btn:hover{background:#3e4a2d;}
-.incorrect-btn{background:var(--red);color:#fff;}
-.incorrect-btn:hover{background:#c0321f;}
+.correct-btn,.incorrect-btn{flex:1;padding:8px;border:var(--b2);font-weight:bold;font-size:.8rem;border-radius:3px;display:flex;align-items:center;justify-content:center;gap:6px;font-family:"Inconsolata",monospace;}
+.correct-btn{background:var(--green6);color:#fff;}.correct-btn:hover{background:#3e4a2d;}
+.incorrect-btn{background:var(--red);color:#fff;}.incorrect-btn:hover{background:#c0321f;}
 
-/* ── YOGA MĀLĀ LIST ── */
+/* ── MĀLĀ ── */
 .series-filters{display:flex;flex-wrap:wrap;gap:5px;padding:10px 0;margin-bottom:10px;}
-.series-filter{
-  padding:4px 10px;border:var(--b1);border-radius:14px;
-  background:var(--green);color:var(--green6);
-  font-size:.72rem;font-weight:bold;transition:background .15s;
-}
+.series-filter{padding:4px 10px;border:var(--b1);border-radius:14px;background:var(--green);color:var(--green6);font-size:.72rem;font-weight:bold;transition:background .15s;}
 .series-filter.active,.series-filter:hover{background:var(--green6);color:#fff;}
 .series-subtitle{padding:8px 0 4px;border-bottom:2px solid var(--bordo);margin-bottom:6px;margin-top:14px;}
 .series-subtitle:first-child{margin-top:0;}
 .series-subtitle-text{font-weight:bold;font-size:.85rem;color:var(--bordo);text-transform:uppercase;}
 .series-count{background:var(--bordo);color:#fff;padding:2px 7px;border-radius:10px;font-size:.7rem;font-weight:bold;margin-left:6px;}
-.asana-item{
-  padding:8px 10px;margin-bottom:5px;background:rgba(188,71,73,.05);
-  border:1px solid var(--bordo);border-radius:3px;
-  width:100%;text-align:left;transition:background .15s;
-}
+.asana-item{padding:8px 10px;margin-bottom:5px;background:rgba(188,71,73,.05);border:1px solid var(--bordo);border-radius:3px;width:100%;text-align:left;transition:background .15s;}
 .asana-item:hover{background:var(--yellow);}
 .asana-sanskrit{font-style:italic;color:var(--bordo);font-size:.82rem;line-height:1.3;}
 
+/* ── KARAṆḌA ── */
+.link-card{background:rgba(47,73,246,.05);border:2px solid var(--blue);border-radius:4px;padding:10px 12px;margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+.link-card-info{flex:1;min-width:0;}
+.link-card-name{font-weight:bold;font-size:.9rem;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.link-card-theme{font-size:.72rem;color:var(--blue);text-transform:uppercase;margin-top:2px;}
+.link-card-actions{display:flex;gap:5px;flex-shrink:0;}
+.link-open-btn{padding:5px 10px;background:var(--blue);color:#fff;border:var(--b1);border-radius:3px;font-size:.75rem;font-weight:bold;font-family:"Inconsolata",monospace;transition:background .15s;}
+.link-open-btn:hover{background:#1e35d4;}
+
 /* ── MODALS ── */
-.modal{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);
-  z-index:2000;align-items:center;justify-content:center;
-}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:2000;align-items:center;justify-content:center;}
 .modal.open{display:flex;}
-.modal-content{
-  background:var(--light);border:var(--b2);border-radius:6px;
-  width:90%;max-width:460px;max-height:88dvh;overflow-y:auto;
-  scrollbar-width:thin;scrollbar-color:var(--bordo) transparent;
-}
-.modal-content::-webkit-scrollbar{width:3px;}
-.modal-content::-webkit-scrollbar-thumb{background:var(--bordo);}
-.modal-header{
-  background:var(--bordo);padding:10px 14px;border-bottom:var(--b3);
-  display:flex;justify-content:space-between;align-items:center;
-  position:sticky;top:0;z-index:1;
-}
+.modal-content{background:var(--light);border:var(--b2);border-radius:6px;width:90%;max-width:460px;max-height:88dvh;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--bordo) transparent;}
+.modal-content::-webkit-scrollbar{width:3px;}.modal-content::-webkit-scrollbar-thumb{background:var(--bordo);}
+.modal-header{background:var(--bordo);padding:10px 14px;border-bottom:var(--b3);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:1;}
 .modal-header h3{color:var(--light);font-size:.9rem;}
 .modal-body{padding:14px;}
-
-/* ── MOON MODAL GRID ── */
 .moon-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;}
 .moon-event{padding:6px 0;}
 .moon-emoji{font-size:1.1rem;color:var(--green6);text-align:center;margin-bottom:2px;}
@@ -303,262 +155,194 @@ main{
 /* ── LOG FORM ── */
 .log-form{padding:12px 14px;}
 .field-label{display:block;font-weight:bold;font-size:.78rem;color:var(--green6);margin:10px 0 4px;}
-.mood-section{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid #33333340;margin-bottom:8px;}
-.practice-toggle{
-  width:30px;height:30px;border-radius:50%;border:var(--b2);
-  display:flex;align-items:center;justify-content:center;
-  color:#fff;font-weight:bold;font-size:.65rem;flex-shrink:0;background:var(--red);
-}
-.practice-toggle.yes{background:var(--green6);}
-.mood-board{display:flex;flex-wrap:wrap;}
-.mood-item{
-  width:28px;height:28px;border-radius:50%;border:var(--b2);
-  display:flex;align-items:center;justify-content:center;
-  margin:2px;font-size:.75rem;transition:transform .15s;
-}
-.mood-item.selected{transform:scale(1.15);filter:hue-rotate(90deg);}
-.text-input,.textarea-input,.date-input-field{
-  width:100%;padding:7px 10px;border:var(--b2);
-  background:var(--yellow);color:var(--green6);
-  font-family:"Inconsolata",monospace;border-radius:2px;
-}
-.textarea-input{background:var(--yellow-light);min-height:80px;resize:vertical;}
-.input-row{display:flex;gap:6px;position:relative;}
-.input-row .text-input{flex:1;}
-.add-btn{
-  width:30px;height:30px;border-radius:50%;border:var(--b2);
-  background:var(--green6);color:#fff;font-size:1.1rem;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+.log-group{border:var(--b1);border-radius:4px;padding:8px;margin-bottom:10px;background:rgba(0,0,0,.02);}
+.log-group-title{font-size:.68rem;font-weight:bold;color:var(--green6);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+
+/* practice cycle button */
+.practice-cycle-btn{
+  display:flex;align-items:center;gap:8px;padding:7px 12px;
+  border:var(--b2);border-radius:4px;width:100%;
+  font-family:"Inconsolata",monospace;font-weight:bold;font-size:.85rem;
   transition:background .15s;
 }
-.add-btn:hover{background:var(--yellow);color:var(--green6);}
-.chips{display:flex;flex-wrap:wrap;gap:4px;min-height:20px;margin-top:4px;}
+.pcb-dot{width:28px;height:28px;border-radius:50%;border:var(--b2);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:.7rem;flex-shrink:0;}
 
-/* ── SEARCH DROPDOWN ── */
-.search-wrap{position:relative;}
-.search-results{
-  position:absolute;top:100%;left:0;right:0;
-  max-height:160px;overflow-y:auto;
-  border:var(--b2);background:var(--green);
-  z-index:500;display:none;
-  scrollbar-width:thin;scrollbar-color:var(--bordo) transparent;
-}
-.search-result{
-  padding:7px 10px;border-bottom:1px solid #333;
-  font-size:.83rem;transition:background .12s;
-}
-.search-result:hover{background:rgba(188,71,73,.2);}
-
-/* ── FILTER MODALS ── */
-.filter-section{margin-bottom:12px;}
-.filter-mood-board{display:flex;flex-wrap:wrap;margin-top:6px;}
-.filter-mood-item{
+/* mood/completeness/style toggle buttons */
+.toggle-row{display:flex;gap:6px;flex-wrap:wrap;}
+.mood-btn,.completeness-btn,.style-btn{
   width:34px;height:34px;border-radius:50%;border:var(--b2);
   display:flex;align-items:center;justify-content:center;
-  margin:2px;opacity:.5;transform:scale(.88);transition:all .15s;
+  font-size:.8rem;transition:all .15s;opacity:.5;
 }
-.filter-mood-item.selected{opacity:1;transform:scale(1.1);border-color:var(--bordo);box-shadow:0 0 5px rgba(188,71,73,.4);}
-.filters-dot{
-  position:absolute;top:-3px;right:-3px;width:9px;height:9px;
-  background:var(--bordo);border-radius:50%;border:2px solid var(--yellow);
-}
+.mood-btn.active,.completeness-btn.active,.style-btn.active{opacity:1;transform:scale(1.1);}
 
-/* ── ASANA MODAL ── */
+/* inputs */
+.text-input,.textarea-input,.date-input-field{width:100%;padding:7px 10px;border:var(--b2);background:var(--yellow);color:var(--green6);font-family:"Inconsolata",monospace;border-radius:2px;}
+.textarea-input{background:var(--yl);min-height:80px;resize:vertical;}
+.input-row{display:flex;gap:6px;position:relative;}.input-row .text-input{flex:1;}
+.add-btn{width:30px;height:30px;border-radius:50%;border:var(--b2);background:var(--green6);color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s;}
+.add-btn:hover{background:var(--yellow);color:var(--green6);}
+.chips{display:flex;flex-wrap:wrap;gap:4px;min-height:20px;margin-top:4px;}
+.search-wrap{position:relative;}
+.search-results{position:absolute;top:100%;left:0;right:0;max-height:150px;overflow-y:auto;border:var(--b2);background:var(--green);z-index:500;display:none;scrollbar-width:thin;scrollbar-color:var(--bordo) transparent;}
+.search-result{padding:7px 10px;border-bottom:1px solid #333;font-size:.83rem;transition:background .12s;}
+.search-result:hover{background:rgba(188,71,73,.2);}
+
+/* filter */
+.filter-section{margin-bottom:12px;}
+.filter-mood-board{display:flex;flex-wrap:wrap;margin-top:6px;}
+.filter-mood-item{width:32px;height:32px;border-radius:50%;border:var(--b2);display:flex;align-items:center;justify-content:center;margin:2px;opacity:.45;transform:scale(.88);transition:all .15s;font-size:.75rem;}
+.filter-mood-item.selected{opacity:1;transform:scale(1.1);border-color:var(--bordo);box-shadow:0 0 5px rgba(188,71,73,.4);}
+.filters-dot{position:absolute;top:-3px;right:-3px;width:9px;height:9px;background:var(--bordo);border-radius:50%;border:2px solid var(--yellow);}
+
+/* asana modal */
 .asana-modal .modal-content{max-width:480px;}
 .asana-info-section{background:rgba(153,143,118,.15);padding:8px;border-radius:3px;border:var(--b1);margin-bottom:8px;}
 .asana-info-title{font-weight:bold;font-size:.78rem;color:var(--green6);margin-bottom:4px;}
 .asana-detail-row{margin:4px 0;font-size:.78rem;}
 .asana-detail-label{font-weight:bold;}
-.asana-link{color:var(--blue);text-decoration:underline;}
-.asana-link:hover{color:var(--orange);}
+.asana-link{color:var(--blue);text-decoration:underline;}.asana-link:hover{color:var(--orange);}
 .asana-image{width:100%;max-height:170px;object-fit:contain;border:var(--b2);border-radius:3px;margin:6px 0;}
-.note-textarea{
-  width:100%;min-height:70px;padding:6px 10px;border:var(--b1);
-  background:var(--yellow-light);color:var(--green6);
-  font-family:"Inconsolata",monospace;font-size:.83rem;resize:vertical;
-}
+.note-textarea{width:100%;min-height:70px;padding:6px 10px;border:var(--b1);background:var(--yl);color:var(--green6);font-family:"Inconsolata",monospace;font-size:.83rem;resize:vertical;}
 .note-actions{display:flex;gap:6px;margin-top:6px;}
-.note-btn{
-  flex:1;padding:5px;border:var(--b1);background:var(--green6);color:#fff;
-  font-size:.72rem;font-weight:bold;border-radius:3px;
-  font-family:"Inconsolata",monospace;text-align:center;transition:background .15s;
-}
-.note-btn.blue{background:var(--blue);}
-.note-btn.red{background:var(--red);}
+.note-btn{flex:1;padding:5px;border:var(--b1);background:var(--green6);color:#fff;font-size:.72rem;font-weight:bold;border-radius:3px;font-family:"Inconsolata",monospace;text-align:center;transition:background .15s;}
+.note-btn.blue{background:var(--blue);}.note-btn.red{background:var(--red);}
 .note-content{padding:7px;background:rgba(188,71,73,.05);border:1px solid var(--bordo);border-radius:3px;white-space:pre-wrap;font-size:.8rem;}
 .note-meta{font-size:.62rem;color:#666;text-align:right;font-style:italic;margin-top:3px;}
 
-/* ── STUDY STATS ── */
+/* study stats */
 .stat-item{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #666;}
 .stat-label{font-weight:bold;font-size:.83rem;}
 .stat-value{font-size:1rem;font-weight:bold;color:var(--green6);}
 .stat-pct{background:var(--green6);color:#fff;padding:3px 9px;border-radius:12px;font-size:.8rem;}
 
-/* ── GO BUTTON ── */
-.go-btn{
-  padding:7px 14px;background:var(--green6);color:#fff;border:var(--b2);
-  border-radius:3px;font-weight:bold;font-size:.8rem;
-  font-family:"Inconsolata",monospace;transition:background .15s;
-}
-.go-btn:hover{background:var(--yellow);color:#333;}
-.go-btn.red{background:var(--red);}
-
-/* ── MISC ── */
+.go-btn{padding:7px 14px;background:var(--green6);color:#fff;border:var(--b2);border-radius:3px;font-weight:bold;font-size:.8rem;font-family:"Inconsolata",monospace;transition:background .15s;}
+.go-btn:hover{background:var(--yellow);color:#333;}.go-btn.red{background:var(--red);}
 .loading{text-align:center;color:#666;font-style:italic;padding:16px;font-size:.83rem;}
-.custom-date-wrap{display:none;margin-top:8px;}
-.date-row{display:flex;gap:8px;}
-.date-row > div{flex:1;}
 .section-divider{border:none;border-top:2px solid var(--bordo);margin:16px 0;}
-
-/* ── MOBILE ── */
-@media(max-width:640px){
-  main{padding-left:10px;padding-right:10px;}
-  .footer-credit{font-size:.58rem;text-align:right;padding-right:4px;}
-}
+.custom-date-wrap{display:none;margin-bottom:10px;}
+.date-row{display:flex;gap:8px;}.date-row>div{flex:1;}
+.pin-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:3000;align-items:center;justify-content:center;}
+.pin-overlay.open{display:flex;}
+.pin-box{background:var(--light);border:var(--b2);border-radius:6px;padding:24px;text-align:center;width:260px;}
+.pin-title{font-weight:bold;font-size:1rem;margin-bottom:12px;color:var(--green6);}
+.pin-input{width:100%;padding:10px;border:var(--b2);background:var(--yellow);font-size:1.2rem;letter-spacing:8px;text-align:center;margin-bottom:10px;}
+.pin-error{color:var(--red);font-size:.75rem;margin-top:4px;display:none;}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="header-inner">
     <div class="line"></div>
     <div class="site-title">Navāṅga</div>
     <div class="line"></div>
+    <button class="lock-btn" id="lock-btn" title="Desbloquear edición"><i class="fa-solid fa-lock"></i></button>
   </div>
 </header>
 
-<!-- MAIN -->
 <main>
 
-  <!-- ═══ PAGE: HOY ═══ -->
-  <div id="page-hoy" class="page active">
-    <div class="topbar">
-      <span class="topbar-title">Bitácora de Hoy</span>
-      <div class="topbar-actions">
-        <button class="icon-btn" id="moon-btn" title="Lunas"><i class="fa-solid fa-moon"></i></button>
-        <button class="icon-btn" id="new-log-btn" title="Nueva entrada"><i class="fa-solid fa-plus"></i></button>
-      </div>
+<!-- ═══ HOY ═══ -->
+<div id="page-hoy" class="page active">
+  <div class="topbar">
+    <span class="topbar-title">Bitácora de Hoy</span>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="moon-btn"><i class="fa-solid fa-moon"></i></button>
+      <button class="icon-btn locked-hide" id="new-log-btn"><i class="fa-solid fa-plus"></i></button>
     </div>
-    <div id="today-content"><div class="loading">Cargando...</div></div>
   </div>
+  <div id="today-content"><div class="loading">Cargando...</div></div>
+</div>
 
-  <!-- ═══ PAGE: ITIHĀSA (historial + stats) ═══ -->
-  <div id="page-historial" class="page">
-    <div class="topbar">
-      <span class="topbar-title">Itihāsa</span>
-      <div class="topbar-actions">
-        <button class="icon-btn" style="position:relative;" id="history-filter-btn" title="Filtrar"><i class="fa-solid fa-filter"></i></button>
-        <button class="icon-btn" id="new-log-btn2" title="Nueva entrada"><i class="fa-solid fa-plus"></i></button>
-      </div>
+<!-- ═══ ITIHĀSA ═══ -->
+<div id="page-historial" class="page">
+  <div class="topbar">
+    <span class="topbar-title">Itihāsa</span>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="settings-btn" title="Configuración"><i class="fa-solid fa-gear"></i></button>
+      <button class="icon-btn" style="position:relative;" id="history-filter-btn"><i class="fa-solid fa-filter"></i></button>
+      <button class="icon-btn locked-hide" id="new-log-btn2"><i class="fa-solid fa-plus"></i></button>
     </div>
-
-    <!-- Periodo (afecta stats Y historial) -->
-    <div class="period-pills" id="period-pills">
-      <button class="period-btn" data-period="week">SEMANA</button>
-      <button class="period-btn active" data-period="month">MES</button>
-      <button class="period-btn" data-period="year">AÑO</button>
-      <button class="period-btn" data-period="custom">CUSTOM</button>
-    </div>
-    <div class="custom-date-wrap" id="custom-date-wrap">
-      <div class="date-row">
-        <div><label class="field-label">DESDE:</label><input type="date" class="date-input-field" id="custom-from"></div>
-        <div><label class="field-label">HASTA:</label><input type="date" class="date-input-field" id="custom-to"></div>
-      </div>
-      <button class="go-btn" id="apply-custom" style="margin-top:8px;width:100%;">APLICAR</button>
-    </div>
-
-    <!-- Stats summary + charts -->
-    <div class="stats-summary" id="stats-summary"></div>
-    <div class="charts-wrap">
-      <div><div class="chart-title">MOODS</div><div class="stats-chart" id="mood-chart"></div></div>
-      <div><div class="chart-title">PRÁCTICA</div><div class="stats-chart" id="practice-chart"></div></div>
-    </div>
-
-    <hr class="section-divider">
-
-    <!-- Historia list -->
-    <div id="log-history"><div class="loading">Cargando...</div></div>
   </div>
-
-  <!-- ═══ PAGE: YOGA MĀLĀ + CLINIC ═══ -->
-  <div id="page-mala" class="page">
-
-    <!-- CLINIC -->
-    <div class="topbar">
-      <span class="topbar-title">Āsana Clinic</span>
-      <div class="topbar-actions">
-        <button class="icon-btn" id="clinic-filter-btn" title="Filtrar serie"><i class="fa-solid fa-filter"></i></button>
-        <button class="icon-btn" id="study-stats-btn" title="Estadísticas de estudio"><i class="fa-solid fa-chart-simple"></i></button>
-      </div>
-    </div>
-    <div class="clinic-wrap">
-      <div style="font-size:.72rem;color:var(--green6);text-transform:uppercase;margin-bottom:8px;">NOMBRA EL ĀSANA — PARA EL CRECIMIENTO ON & OFF THE MAT</div>
-      <div class="clinic-img-wrap">
-        <img id="practice-asana-image" class="practice-asana-image" alt="Asana">
-        <div class="series-circle" id="practice-series-circle"></div>
-      </div>
-      <div id="sanskrit-hidden"><button class="show-answer-btn" id="show-answer-btn">Mostrar nombre sánscrito</button></div>
-      <div id="sanskrit-revealed" style="display:none;"><div class="sanskrit-name" id="sanskrit-name"></div></div>
-      <div class="clinic-controls">
-        <button class="incorrect-btn" id="incorrect-btn">Incorrecto <i class="fa-solid fa-xmark"></i></button>
-        <button class="correct-btn" id="correct-btn">Correcto <i class="fa-solid fa-check"></i></button>
-      </div>
-    </div>
-
-    <hr class="section-divider">
-
-    <!-- YOGA MĀLĀ LIST -->
-    <div class="topbar">
-      <span class="topbar-title">Yoga Mālā</span>
-      <button class="icon-btn" id="mala-filter-btn" title="Filtrar serie"><i class="fa-solid fa-filter"></i></button>
-    </div>
-    <div id="asanas-list"></div>
+  <div class="stats-summary" id="stats-summary"></div>
+  <div class="charts-grid">
+    <div><div class="chart-title">MOODS</div><div class="stats-chart" id="mood-chart"></div></div>
+    <div><div class="chart-title">COMPLETITUD</div><div class="stats-chart" id="comp-chart"></div></div>
+    <div class="chart-full"><div class="chart-title">ESTILOS</div><div class="stats-chart" id="style-chart"></div></div>
   </div>
+  <hr class="section-divider">
+  <div id="log-history"><div class="loading">Cargando...</div></div>
+</div>
 
-  <!-- ═══ PAGE: KARAṆḌA (links) ═══ -->
-  <div id="page-karanda" class="page">
-    <div class="topbar">
-      <span class="topbar-title">Karaṇḍa</span>
-      <div class="topbar-actions">
-        <button class="icon-btn" style="position:relative;" id="link-filter-btn" title="Filtrar"><i class="fa-solid fa-filter"></i></button>
-        <button class="icon-btn" id="new-link-btn" title="Nuevo link"><i class="fa-solid fa-plus"></i></button>
-      </div>
+<!-- ═══ YOGA MĀLĀ + CLINIC ═══ -->
+<div id="page-mala" class="page">
+  <div class="topbar">
+    <span class="topbar-title">Āsana Clinic</span>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="clinic-filter-btn"><i class="fa-solid fa-filter"></i></button>
+      <button class="icon-btn" id="study-stats-btn"><i class="fa-solid fa-chart-simple"></i></button>
     </div>
-    <div id="links-list"><div class="loading">Cargando...</div></div>
   </div>
+  <div class="clinic-wrap">
+    <div style="font-size:.72rem;color:var(--green6);text-transform:uppercase;margin-bottom:8px;">NOMBRA EL ĀSANA — ON & OFF THE MAT</div>
+    <div class="clinic-img-wrap">
+      <img id="practice-asana-image" class="practice-asana-image" alt="Asana">
+      <div class="series-circle" id="practice-series-circle"></div>
+    </div>
+    <div id="sanskrit-hidden"><button class="show-answer-btn" id="show-answer-btn">Mostrar nombre sánscrito</button></div>
+    <div id="sanskrit-revealed" style="display:none;"><div class="sanskrit-name" id="sanskrit-name"></div></div>
+    <div class="clinic-controls">
+      <button class="incorrect-btn" id="incorrect-btn">Incorrecto <i class="fa-solid fa-xmark"></i></button>
+      <button class="correct-btn" id="correct-btn">Correcto <i class="fa-solid fa-check"></i></button>
+    </div>
+  </div>
+  <hr class="section-divider">
+  <div class="topbar">
+    <span class="topbar-title">Yoga Mālā</span>
+    <button class="icon-btn" id="mala-filter-btn"><i class="fa-solid fa-filter"></i></button>
+  </div>
+  <div id="asanas-list"></div>
+</div>
+
+<!-- ═══ KARAṆḌA ═══ -->
+<div id="page-karanda" class="page">
+  <div class="topbar">
+    <span class="topbar-title">Karaṇḍa</span>
+    <div class="topbar-actions">
+      <button class="icon-btn" style="position:relative;" id="link-filter-btn"><i class="fa-solid fa-filter"></i></button>
+      <button class="icon-btn locked-hide" id="new-link-btn"><i class="fa-solid fa-plus"></i></button>
+    </div>
+  </div>
+  <div id="links-list"><div class="loading">Cargando...</div></div>
+</div>
 
 </main>
 
-<!-- FOOTER: only credit text -->
-<footer>
-  <span class="footer-credit">Creado por Mica · Aṣṭāṅgī et. 2018</span>
-</footer>
+<footer><span class="footer-credit">Creado por Mica · Aṣṭāṅgī et. 2018</span></footer>
 
-<!-- BURGER FLOATING NAV -->
+<!-- BURGER -->
 <div class="floating-menu" id="floating-menu">
   <div class="menu-items" id="menu-items">
-    <div class="menu-item">
-      <button class="menu-item-btn" data-page="page-karanda"><i class="fa-solid fa-link"></i></button>
-      <span class="menu-item-label">Karaṇḍa</span>
-    </div>
-    <div class="menu-item">
-      <button class="menu-item-btn" data-page="page-mala"><i class="fa-solid fa-list-ul"></i></button>
-      <span class="menu-item-label">Yoga Mālā</span>
-    </div>
-    <div class="menu-item">
-      <button class="menu-item-btn" data-page="page-historial"><i class="fa-solid fa-calendar-check"></i></button>
-      <span class="menu-item-label">Itihāsa</span>
-    </div>
-    <div class="menu-item">
-      <button class="menu-item-btn active" data-page="page-hoy"><i class="fa-solid fa-house"></i></button>
-      <span class="menu-item-label">Hoy</span>
-    </div>
+    <div class="menu-item"><button class="menu-item-btn" data-page="page-karanda"><i class="fa-solid fa-link"></i></button><span class="menu-item-label">Karaṇḍa</span></div>
+    <div class="menu-item"><button class="menu-item-btn" data-page="page-mala"><i class="fa-solid fa-list-ul"></i></button><span class="menu-item-label">Yoga Mālā</span></div>
+    <div class="menu-item"><button class="menu-item-btn" data-page="page-historial"><i class="fa-solid fa-calendar-check"></i></button><span class="menu-item-label">Itihāsa</span></div>
+    <div class="menu-item"><button class="menu-item-btn active" data-page="page-hoy"><i class="fa-solid fa-house"></i></button><span class="menu-item-label">Hoy</span></div>
   </div>
   <button class="burger-btn" id="burger-btn"><i class="fas fa-bars"></i></button>
 </div>
 
 <!-- ═══ MODALS ═══ -->
+
+<!-- PIN overlay -->
+<div class="pin-overlay" id="pin-overlay">
+  <div class="pin-box">
+    <div class="pin-title"><i class="fa-solid fa-lock"></i> Ingresá el PIN</div>
+    <input type="password" class="pin-input" id="pin-input" maxlength="4" placeholder="••••" inputmode="numeric">
+    <div class="pin-error" id="pin-error">PIN incorrecto</div>
+    <button class="go-btn" id="pin-submit" style="width:100%;margin-top:8px;">DESBLOQUEAR</button>
+  </div>
+</div>
 
 <!-- Moon -->
 <div class="modal" id="moon-modal">
@@ -576,11 +360,39 @@ main{
   </div>
 </div>
 
-<!-- History filter -->
+<!-- Settings (goal) -->
+<div class="modal" id="settings-modal">
+  <div class="modal-content">
+    <div class="modal-header"><h3>CONFIGURACIÓN</h3><button class="icon-btn close-modal"><i class="fa-solid fa-x"></i></button></div>
+    <div class="modal-body">
+      <div class="field-label">GOAL DE PRÁCTICAS POR SEMANA</div>
+      <input type="number" class="text-input" id="goal-input" min="1" max="7" value="5">
+      <button class="go-btn" id="save-goal-btn" style="width:100%;margin-top:10px;">GUARDAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- History filter (with period inside) -->
 <div class="modal" id="hfilter-modal">
   <div class="modal-content">
-    <div class="modal-header"><h3>FILTRAR HISTORIAL</h3><button class="icon-btn close-modal"><i class="fa-solid fa-x"></i></button></div>
+    <div class="modal-header"><h3>FILTRAR ITIHĀSA</h3><button class="icon-btn close-modal"><i class="fa-solid fa-x"></i></button></div>
     <div class="modal-body">
+      <div class="filter-section">
+        <div class="field-label">PERIODO</div>
+        <div class="period-pills" id="hfilter-period-pills">
+          <button class="period-btn active" data-period="all">TODOS</button>
+          <button class="period-btn" data-period="week">SEMANA</button>
+          <button class="period-btn" data-period="month">MES</button>
+          <button class="period-btn" data-period="year">AÑO</button>
+          <button class="period-btn" data-period="custom">CUSTOM</button>
+        </div>
+        <div class="custom-date-wrap" id="hfilter-custom-wrap">
+          <div class="date-row">
+            <div><label class="field-label" style="font-size:.7rem;">DESDE:</label><input type="date" class="date-input-field" id="hfilter-from"></div>
+            <div><label class="field-label" style="font-size:.7rem;">HASTA:</label><input type="date" class="date-input-field" id="hfilter-to"></div>
+          </div>
+        </div>
+      </div>
       <div class="filter-section">
         <div class="field-label">ETIQUETAS</div>
         <input type="text" class="text-input" id="filter-tag-input" placeholder="Buscar etiquetas...">
@@ -591,10 +403,13 @@ main{
         <div class="filter-mood-board" id="filter-mood-board"></div>
       </div>
       <div class="filter-section">
-        <div class="field-label">PRÁCTICA</div>
-        <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
-          <div class="practice-dot no" id="filter-practice-toggle" style="cursor:pointer!important;">NO</div>
-          <span style="font-size:.82rem;">Práctica realizada</span>
+        <div class="field-label">ESTADO DE PRÁCTICA</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+          <button class="period-btn" data-pstate="si" id="fpstate-si">SÍ</button>
+          <button class="period-btn" data-pstate="no" id="fpstate-no">NO</button>
+          <button class="period-btn" data-pstate="sp" id="fpstate-sp">SP</button>
+          <button class="period-btn" data-pstate="moon" id="fpstate-moon"><i class="fa-solid fa-moon"></i> MOON</button>
+          <button class="period-btn active" data-pstate="all" id="fpstate-all">TODOS</button>
         </div>
       </div>
       <div style="display:flex;gap:8px;margin-top:12px;">
@@ -605,25 +420,7 @@ main{
   </div>
 </div>
 
-<!-- Mālā series filter modal -->
-<div class="modal" id="mala-filter-modal">
-  <div class="modal-content">
-    <div class="modal-header"><h3>FILTRAR POR SERIE</h3><button class="icon-btn close-modal"><i class="fa-solid fa-x"></i></button></div>
-    <div class="modal-body">
-      <div class="series-filters" id="mala-series-filters" style="flex-direction:column;gap:8px;">
-        <button class="series-filter active" data-series="all">Todas las series</button>
-        <button class="series-filter" data-series="ādhāra">Ādhāra — Fundamentales</button>
-        <button class="series-filter" data-series="yogacikitsā">Yoga Cikitsā — Primera</button>
-        <button class="series-filter" data-series="nāḍī śodhana">Nāḍī Śodhana — Segunda</button>
-        <button class="series-filter" data-series="tṛtīya śreṇī">Tṛtīya Śreṇī — Tercera</button>
-        <button class="series-filter" data-series="pṛṣṭhavakrāsana">Pṛṣṭhavakrāsana — Arcos</button>
-        <button class="series-filter" data-series="samāpana">Samāpana — Cierre</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Clinic series filter modal -->
+<!-- Clinic series filter -->
 <div class="modal" id="clinic-filter-modal">
   <div class="modal-content">
     <div class="modal-header"><h3>FILTRAR CLINIC POR SERIE</h3><button class="icon-btn close-modal"><i class="fa-solid fa-x"></i></button></div>
@@ -641,13 +438,31 @@ main{
   </div>
 </div>
 
-<!-- Karaṇḍa: new/edit link modal -->
+<!-- Mālā series filter -->
+<div class="modal" id="mala-filter-modal">
+  <div class="modal-content">
+    <div class="modal-header"><h3>FILTRAR POR SERIE</h3><button class="icon-btn close-modal"><i class="fa-solid fa-x"></i></button></div>
+    <div class="modal-body">
+      <div class="series-filters" id="mala-series-filters" style="flex-direction:column;gap:8px;">
+        <button class="series-filter active" data-series="all">Todas las series</button>
+        <button class="series-filter" data-series="ādhāra">Ādhāra — Fundamentales</button>
+        <button class="series-filter" data-series="yogacikitsā">Yoga Cikitsā — Primera</button>
+        <button class="series-filter" data-series="nāḍī śodhana">Nāḍī Śodhana — Segunda</button>
+        <button class="series-filter" data-series="tṛtīya śreṇī">Tṛtīya Śreṇī — Tercera</button>
+        <button class="series-filter" data-series="pṛṣṭhavakrāsana">Pṛṣṭhavakrāsana — Arcos</button>
+        <button class="series-filter" data-series="samāpana">Samāpana — Cierre</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Karaṇḍa link modal -->
 <div class="modal" id="link-modal">
   <div class="modal-content">
     <div class="modal-header">
       <h3 id="link-modal-title">NUEVO LINK</h3>
       <div style="display:flex;gap:6px;">
-        <button class="icon-btn" id="save-link-btn" title="Guardar"><i class="fa-solid fa-floppy-disk"></i></button>
+        <button class="icon-btn" id="save-link-btn"><i class="fa-solid fa-floppy-disk"></i></button>
         <button class="icon-btn close-modal"><i class="fa-solid fa-x"></i></button>
       </div>
     </div>
@@ -657,12 +472,12 @@ main{
       <label class="field-label" style="margin-top:10px;">LINK</label>
       <input type="url" class="text-input" id="link-url" placeholder="https://...">
       <label class="field-label" style="margin-top:10px;">THEME</label>
-      <input type="text" class="text-input" id="link-theme" placeholder="ej: pranayama, backbends, meditación...">
+      <input type="text" class="text-input" id="link-theme" placeholder="ej: pranayama, backbends...">
     </div>
   </div>
 </div>
 
-<!-- Karaṇḍa: filter modal -->
+<!-- Karaṇḍa filter -->
 <div class="modal" id="link-filter-modal">
   <div class="modal-content">
     <div class="modal-header"><h3>FILTRAR KARAṆḌA</h3><button class="icon-btn close-modal"><i class="fa-solid fa-x"></i></button></div>
@@ -680,27 +495,68 @@ main{
   </div>
 </div>
 
-<!-- Log entry modal -->
+<!-- Log modal -->
 <div class="modal" id="log-modal">
   <div class="modal-content">
     <div class="modal-header">
       <h3 id="log-modal-title">NUEVO REGISTRO</h3>
       <div style="display:flex;gap:6px;">
-        <button class="icon-btn" id="save-log-btn" title="Guardar"><i class="fa-solid fa-floppy-disk"></i></button>
-        <button class="icon-btn" id="clear-log-btn" title="Limpiar"><i class="fa-solid fa-rotate-left"></i></button>
+        <button class="icon-btn" id="save-log-btn"><i class="fa-solid fa-floppy-disk"></i></button>
+        <button class="icon-btn" id="clear-log-btn"><i class="fa-solid fa-rotate-left"></i></button>
         <button class="icon-btn close-modal"><i class="fa-solid fa-x"></i></button>
       </div>
     </div>
     <div class="log-form">
-      <div class="field-label">MOOD & PRÁCTICA</div>
-      <div class="mood-section">
-        <div class="practice-toggle" id="practice-button">NO</div>
-        <div class="mood-board" id="mood-board"></div>
-      </div>
-      <label class="field-label" for="practice-date">FECHA</label>
+
+      <!-- FECHA -->
+      <label class="field-label">FECHA</label>
       <input type="date" class="date-input-field" id="practice-date">
+
+      <!-- ESTADO (SÍ/NO/SP/MOON) -->
+      <div class="log-group">
+        <div class="log-group-title">Estado de Práctica</div>
+        <button class="practice-cycle-btn" id="practice-cycle-btn">
+          <div class="pcb-dot pd-no" id="pcb-dot">NO</div>
+          <span id="pcb-label">No practicaste hoy</span>
+        </button>
+      </div>
+
+      <!-- MOOD (excluyente, cíclico) -->
+      <div class="log-group" id="mood-group">
+        <div class="log-group-title">Mood</div>
+        <div class="toggle-row" id="mood-toggle-row">
+          <button class="mood-btn" data-mood="feliz" style="background:#2a9d8f;color:#fff;" title="YeaYy!!"><i class="fa-solid fa-face-laugh-beam"></i></button>
+          <button class="mood-btn" data-mood="enojado" style="background:#e9c46a;color:#333;" title="Ehhh..."><i class="fa-solid fa-face-meh"></i></button>
+          <button class="mood-btn" data-mood="neutral" style="background:#bc4749;color:#fff;" title="Neutral"><i class="fa-solid fa-face-tired"></i></button>
+        </div>
+      </div>
+
+      <!-- COMPLETITUD (excluyente) -->
+      <div class="log-group" id="comp-group">
+        <div class="log-group-title">Completitud</div>
+        <div class="toggle-row">
+          <button class="completeness-btn" data-comp="complete" style="background:#81b29a;color:#fff;" title="Completa"><i class="fa-solid fa-check"></i></button>
+          <button class="completeness-btn" data-comp="inconclusa" style="background:#bc6c25;color:#fff;" title="Inconclusa"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </div>
+
+      <!-- ESTILO (excluyente, cíclico) -->
+      <div class="log-group" id="style-group">
+        <div class="log-group-title">Estilo</div>
+        <div class="toggle-row" id="style-toggle-row">
+          <button class="style-btn" data-style="primera" style="background:#da627d;color:#fff;" title="Primera"><i class="fa-solid fa-1"></i></button>
+          <button class="style-btn" data-style="segunda" style="background:#ffa5ab;color:#333;" title="Segunda"><i class="fa-solid fa-2"></i></button>
+          <button class="style-btn" data-style="otro estilo" style="background:#a26769;color:#fff;" title="Vinyasa"><i class="fa-solid fa-fire"></i></button>
+          <button class="style-btn" data-style="yin" style="background:rgb(233,196,190);color:#333;" title="Yin"><i class="fa-solid fa-yin-yang"></i></button>
+          <button class="style-btn" data-style="fitness" style="background:#95E1D3;color:#333;" title="Drills"><i class="fa-solid fa-dumbbell"></i></button>
+        </div>
+      </div>
+
+      <!-- NOTAS -->
       <label class="field-label">NOTAS</label>
       <textarea class="textarea-input" id="practice-notes" placeholder="Escribe tus notas aquí..."></textarea>
+
+      <!-- TAGS -->
       <label class="field-label">ETIQUETAS</label>
       <div class="input-row">
         <input type="text" class="text-input" id="tag-input" placeholder="Vincular etiquetas...">
@@ -708,6 +564,8 @@ main{
         <div class="search-results" id="tag-search-results"></div>
       </div>
       <div class="chips" id="tags-list"></div>
+
+      <!-- ĀSANAS -->
       <label class="field-label">ĀSANAS</label>
       <div class="search-wrap">
         <div class="input-row">
@@ -721,42 +579,45 @@ main{
   </div>
 </div>
 
-<!-- ═══ SCRIPT ═══ -->
 <script>
 /* ── SUPABASE ── */
-const SUPABASE_URL  = 'https://fljzhgfmgswqxhatezhn.supabase.co';
-const SUPABASE_ANON = 'sb_publishable_mPSg2RcST_3rw3wYrfO-5A_Uta3Nj12';
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+const SUPABASE_URL='https://fljzhgfmgswqxhatezhn.supabase.co';
+const SUPABASE_ANON='PEGAR_ACA_LA_PUBLISHABLE_KEY_COMPLETA';
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 
-/* ── MOOD OPTIONS ── */
-const MOODS = [
-  {name:'special practice',label:'Special Practice',emoji:'<i class="fa-solid" style="color:#fff;font-style:normal;font-size:.6rem;">SP</i>',color:'var(--blue)'},
-  {name:'feliz',label:'YeaYy!!',emoji:'<i class="fa-solid fa-face-laugh-beam"></i>',color:'#2a9d8f'},
-  {name:'enojado',label:'Ehhh...',emoji:'<i class="fa-solid fa-face-meh"></i>',color:'#e9c46a'},
-  {name:'neutral',label:'Neutral',emoji:'<i class="fa-solid fa-face-tired"></i>',color:'#bc4749'},
-  {name:'complete',label:'Completa',emoji:'<i class="fa-solid fa-check"></i>',color:'#81b29a'},
-  {name:'inconclusa',label:'Incompleta',emoji:'<i class="fa-solid fa-xmark"></i>',color:'#bc6c25'},
-  {name:'primera',label:'Primera',emoji:'<i class="fa-solid fa-1"></i>',color:'#da627d'},
-  {name:'segunda',label:'Segunda',emoji:'<i class="fa-solid fa-2"></i>',color:'#ffa5ab'},
-  {name:'otro estilo',label:'Vinyasa',emoji:'<i class="fa-solid fa-fire"></i>',color:'#a26769'},
-  {name:'yin',label:'Yin',emoji:'<i class="fa-solid fa-yin-yang"></i>',color:'rgb(233,196,190)'},
-  {name:'fitness',label:'Drills',emoji:'<i class="fa-solid fa-dumbbell"></i>',color:'#95E1D3'},
-  {name:'moon day',label:'Moon Day',emoji:'<i class="fa-solid fa-moon"></i>',color:'#ced4da'},
-  {name:'quote',label:'Quote',emoji:'<i class="fa-solid fa-quote-right"></i>',color:'#6d597a'},
-];
-const MOOD_CATS = {
-  moods:['feliz','enojado','neutral','moon day'],
-  practice:['complete','inconclusa','primera','segunda','otro estilo','yin']
-};
+/* ── PIN / LOCK ── */
+const CORRECT_PIN='2302';
+let isUnlocked=false;
+function applyLockState(){
+  document.querySelectorAll('.locked-hide').forEach(el=>{el.style.display=isUnlocked?'flex':'none';});
+  const lb=document.getElementById('lock-btn');
+  lb.innerHTML=isUnlocked?'<i class="fa-solid fa-lock-open"></i>':'<i class="fa-solid fa-lock"></i>';
+  lb.className='lock-btn'+(isUnlocked?' unlocked':'');
+}
+document.getElementById('lock-btn').addEventListener('click',()=>{
+  if(isUnlocked){isUnlocked=false;applyLockState();}
+  else document.getElementById('pin-overlay').classList.add('open');
+});
+document.getElementById('pin-submit').addEventListener('click',()=>{
+  const val=document.getElementById('pin-input').value;
+  if(val===CORRECT_PIN){
+    isUnlocked=true;applyLockState();
+    document.getElementById('pin-overlay').classList.remove('open');
+    document.getElementById('pin-input').value='';
+    document.getElementById('pin-error').style.display='none';
+  } else {
+    document.getElementById('pin-error').style.display='block';
+    document.getElementById('pin-input').value='';
+  }
+});
+document.getElementById('pin-input').addEventListener('keydown',e=>{if(e.key==='Enter') document.getElementById('pin-submit').click();});
+document.getElementById('pin-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget){e.currentTarget.classList.remove('open');document.getElementById('pin-input').value='';document.getElementById('pin-error').style.display='none';}});
 
-/* ── STATE ── */
-let logHistory=[], asanasData=[], moonPhases=[];
-let selectedMoods=[], currentTags=[], currentAsanas=[], currentLogEntry={};
-let currentPeriod='month', customRange=null;
-let studyStats={totalAnswers:0,correctAnswers:0,uniqueAsanas:0};
-let currentPracticeAsana=null;
-let clinicSeriesFilter='all', malaSeriesFilter='all';
-let hFilters={tags:[],moods:[],practiced:null};
+/* ── MODALS ── */
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.close-modal').forEach(btn=>btn.addEventListener('click',()=>{const m=btn.closest('.modal');if(m)m.classList.remove('open');}));
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
 
 /* ── PAGE NAV ── */
 function showPage(id){
@@ -772,19 +633,10 @@ const burgerBtn=document.getElementById('burger-btn');
 const menuItemsEl=document.getElementById('menu-items');
 function closeMenu(){burgerBtn.classList.remove('open');menuItemsEl.classList.remove('open');}
 burgerBtn.addEventListener('click',()=>{burgerBtn.classList.toggle('open');menuItemsEl.classList.toggle('open');});
-document.addEventListener('click',e=>{if(!e.target.closest('.floating-menu')) closeMenu();});
-
-/* ── MODALS ── */
-function openModal(id){document.getElementById(id).classList.add('open');}
-function closeModal(id){document.getElementById(id).classList.remove('open');}
-document.querySelectorAll('.close-modal').forEach(btn=>btn.addEventListener('click',()=>{
-  const m=btn.closest('.modal'); if(m) m.classList.remove('open');
-}));
-document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
-  if(e.target===m) m.classList.remove('open');
-}));
+document.addEventListener('click',e=>{if(!e.target.closest('.floating-menu'))closeMenu();});
 
 /* ── MOON ── */
+let moonPhases=[];
 function loadMoonPhases(){
   const all=[
     {date:new Date('2026-07-14T06:43:00'),type:'Luna Nueva'},
@@ -800,384 +652,419 @@ function loadMoonPhases(){
     {date:new Date('2026-12-08T21:52:00'),type:'Luna Nueva'},
     {date:new Date('2026-12-23T22:28:00'),type:'Luna Llena'},
   ];
-  const now=new Date();
-  moonPhases=all.filter(p=>p.date>=now).sort((a,b)=>a.date-b.date).slice(0,6);
-  // render modal content
+  moonPhases=all.filter(p=>p.date>=new Date()).sort((a,b)=>a.date-b.date).slice(0,6);
   document.getElementById('moon-info').innerHTML=moonPhases.map(p=>{
     const icon=p.type==='Luna Llena'?'<i class="fa-regular fa-circle"></i>':'<i class="fa-solid fa-circle"></i>';
-    return `<div class="moon-event">
-      <div class="moon-emoji">${icon}</div>
+    return `<div class="moon-event"><div class="moon-emoji">${icon}</div>
       <div class="moon-date">${p.date.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'})}</div>
       <div class="moon-type">${p.type}</div>
-      <div class="moon-time">${p.date.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}</div>
-    </div>`;
+      <div class="moon-time">${p.date.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}</div></div>`;
   }).join('');
-  // now re-render today card so the moon box appears
   updateTodayCard();
 }
 document.getElementById('moon-btn').addEventListener('click',()=>openModal('moon-modal'));
 
 /* ── TODAY ── */
+let logHistory=[];
+function practiceStateFromEntry(e){
+  if(!e) return null;
+  const moods=e.moods||[];
+  if(moods.some(m=>m.name==='moon day')) return 'moon';
+  if(moods.some(m=>m.name==='special practice')) return 'sp';
+  if(e.practiced) return 'si';
+  return 'no';
+}
+const PSTATE_LABELS={si:'¡Practicaste hoy!',no:'Hoy no practicaste',sp:'Special Practice',moon:'Moon Day'};
 function updateTodayCard(){
   const tc=document.getElementById('today-content');
   const now=new Date();
+  const todayStr=now.toDateString();
   const dateLabel=now.toLocaleDateString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   const timeLabel=now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
-  const todayStr=now.toDateString();
   const entries=logHistory.filter(e=>new Date(e.date).toDateString()===todayStr);
   entries.sort((a,b)=>new Date(b.date)-new Date(a.date));
   const entry=entries[0]||null;
   let html=`<div class="namaste-title"><i class="fa-solid fa-hands-praying"></i> NAMASTE</div>
     <div class="date-label">${dateLabel} — ${timeLabel}</div>`;
   if(entry){
-    const hasSP=(entry.moods||[]).some(m=>m.name==='special practice');
-    const status=hasSP?'Special Practice':(entry.practiced?'¡Practicaste hoy!':'Hoy no practicaste');
-    const moodsHTML=(entry.moods||[]).map(m=>`<div class="mood-chip" style="background:${m.color}">${m.emoji}</div>`).join('');
+    const ps=practiceStateFromEntry(entry);
+    const moods=(entry.moods||[]).filter(m=>['feliz','enojado','neutral'].includes(m.name));
+    const styles=(entry.moods||[]).filter(m=>['complete','inconclusa','primera','segunda','otro estilo','yin','fitness'].includes(m.name));
+    const moodsHTML=moods.map(m=>`<div class="mood-chip" style="background:${MOOD_MAP[m.name]?.color||'#999'}">${MOOD_MAP[m.name]?.emoji||''}</div>`).join('');
+    const stylesHTML=styles.map(m=>`<span class="tag" style="background:${MOOD_MAP[m.name]?.color||'#999'}">${m.name}</span>`).join('');
     html+=`<div class="practice-box">
-      <div class="practice-status">${status}</div>
-      <div class="mood-row">${moodsHTML}</div>
+      <div class="practice-status">${PSTATE_LABELS[ps]||''}</div>
+      <div class="mood-row">${moodsHTML}${stylesHTML}</div>
       ${entry.notes?`<div class="detail"><strong>Notas:</strong> ${entry.notes}</div>`:''}
       ${(entry.tags||[]).length?`<div class="detail"><strong>Tags:</strong> ${entry.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`:''}
     </div>`;
   } else {
-    html+=`<div class="practice-box">
-      <div class="practice-status">Hoy no practicaste</div>
+    html+=`<div class="practice-box"><div class="practice-status">Hoy no practicaste</div>
       <p style="font-size:.82rem;margin:6px 0;">¿Querés registrar tu práctica?</p>
       <button class="go-btn" id="open-log-today" style="margin-top:6px;">Registrar práctica</button>
     </div>`;
   }
-  // next moon
   if(moonPhases.length){
     const next=moonPhases[0];
     const icon=next.type==='Luna Llena'?'<i class="fa-regular fa-circle"></i>':'<i class="fa-solid fa-circle"></i>';
-    html+=`<div class="moon-box">
-      <div class="moon-box-title">Próxima Luna</div>
-      <div class="moon-row">${icon} <strong>${next.type}</strong> — ${next.date.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'})}</div>
-    </div>`;
+    html+=`<div class="moon-box"><div class="moon-box-title">Próxima Luna</div>
+      <div class="moon-row">${icon} <strong>${next.type}</strong> — ${next.date.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'})}</div></div>`;
   }
   tc.innerHTML=html;
   const ob=document.getElementById('open-log-today');
   if(ob) ob.addEventListener('click',()=>showLogModal());
 }
 
+/* ── MOOD MAP (for rendering) ── */
+const MOOD_MAP={
+  'special practice':{color:'var(--blue)',emoji:'<i class="fa-solid" style="font-style:normal;font-size:.6rem;">SP</i>'},
+  'feliz':{color:'#2a9d8f',emoji:'<i class="fa-solid fa-face-laugh-beam"></i>'},
+  'enojado':{color:'#e9c46a',emoji:'<i class="fa-solid fa-face-meh"></i>'},
+  'neutral':{color:'#bc4749',emoji:'<i class="fa-solid fa-face-tired"></i>'},
+  'complete':{color:'#81b29a',emoji:'<i class="fa-solid fa-check"></i>'},
+  'inconclusa':{color:'#bc6c25',emoji:'<i class="fa-solid fa-xmark"></i>'},
+  'primera':{color:'#da627d',emoji:'<i class="fa-solid fa-1"></i>'},
+  'segunda':{color:'#ffa5ab',emoji:'<i class="fa-solid fa-2"></i>'},
+  'otro estilo':{color:'#a26769',emoji:'<i class="fa-solid fa-fire"></i>'},
+  'yin':{color:'rgb(233,196,190)',emoji:'<i class="fa-solid fa-yin-yang"></i>'},
+  'fitness':{color:'#95E1D3',emoji:'<i class="fa-solid fa-dumbbell"></i>'},
+  'moon day':{color:'#ced4da',emoji:'<i class="fa-solid fa-moon"></i>'},
+  'quote':{color:'#6d597a',emoji:'<i class="fa-solid fa-quote-right"></i>'},
+};
+
+/* ── SETTINGS / GOAL ── */
+let weeklyGoal=5;
+async function loadGoal(){
+  try{
+    const{data}=await supabaseClient.from('navanga_config').select('value').eq('key','weekly_goal').single();
+    if(data) weeklyGoal=parseInt(data.value)||5;
+  }catch(e){}
+  document.getElementById('goal-input').value=weeklyGoal;
+}
+document.getElementById('settings-btn').addEventListener('click',async()=>{await loadGoal();openModal('settings-modal');});
+document.getElementById('save-goal-btn').addEventListener('click',async()=>{
+  const val=parseInt(document.getElementById('goal-input').value)||5;
+  weeklyGoal=val;
+  try{await supabaseClient.from('navanga_config').upsert([{key:'weekly_goal',value:String(val)}]);}catch(e){}
+  updateStats();closeModal('settings-modal');
+});
+
 /* ── STATISTICS ── */
-function filterByPeriod(entries){
+let currentPeriod='month',hFilterPeriod='all',customRange=null;
+let hFilters={tags:[],moods:[],pstate:null};
+
+function filterByPeriod(entries,period,cRange){
   const today=new Date();
-  if(currentPeriod==='custom'&&customRange){
-    const f=new Date(customRange.from); f.setHours(0,0,0,0);
-    const t=new Date(customRange.to); t.setHours(23,59,59,999);
+  if(period==='custom'&&cRange){
+    const f=new Date(cRange.from);f.setHours(0,0,0,0);
+    const t=new Date(cRange.to);t.setHours(23,59,59,999);
     return entries.filter(e=>{const d=new Date(e.date);return d>=f&&d<=t;});
   }
-  switch(currentPeriod){
-    case 'week':{
-      const dow=today.getDay(),diff=dow===0?6:dow-1;
-      const s=new Date(today); s.setDate(today.getDate()-diff); s.setHours(0,0,0,0);
-      const e=new Date(s); e.setDate(s.getDate()+6); e.setHours(23,59,59,999);
-      return entries.filter(en=>{const d=new Date(en.date);return d>=s&&d<=e;});
-    }
-    case 'month':{
-      const s=new Date(today.getFullYear(),today.getMonth(),1);
-      const e=new Date(today.getFullYear(),today.getMonth()+1,0,23,59,59,999);
-      return entries.filter(en=>{const d=new Date(en.date);return d>=s&&d<=e;});
-    }
-    case 'year':{
-      const s=new Date(today.getFullYear(),0,1);
-      const e=new Date(today.getFullYear(),11,31,23,59,59,999);
-      return entries.filter(en=>{const d=new Date(en.date);return d>=s&&d<=e;});
-    }
-    default: return entries;
+  if(period==='all') return entries;
+  switch(period){
+    case 'week':{const dow=today.getDay(),diff=dow===0?6:dow-1;const s=new Date(today);s.setDate(today.getDate()-diff);s.setHours(0,0,0,0);const e=new Date(s);e.setDate(s.getDate()+6);e.setHours(23,59,59,999);return entries.filter(en=>{const d=new Date(en.date);return d>=s&&d<=e;});}
+    case 'month':{const s=new Date(today.getFullYear(),today.getMonth(),1);const e=new Date(today.getFullYear(),today.getMonth()+1,0,23,59,59,999);return entries.filter(en=>{const d=new Date(en.date);return d>=s&&d<=e;});}
+    case 'year':{const s=new Date(today.getFullYear(),0,1);const e=new Date(today.getFullYear(),11,31,23,59,59,999);return entries.filter(en=>{const d=new Date(en.date);return d>=s&&d<=e;});}
+    default:return entries;
   }
 }
-function getISOWeek(d){
-  const t=new Date(d),n=(d.getDay()+6)%7; t.setDate(t.getDate()-n+3);
-  const f=t.valueOf(); t.setMonth(0,1);
-  if(t.getDay()!==4){t.setMonth(0,1+((4-t.getDay())+7)%7);}
-  return 1+Math.ceil((f-t)/604800000);
-}
+function getISOWeek(d){const t=new Date(d),n=(d.getDay()+6)%7;t.setDate(t.getDate()-n+3);const f=t.valueOf();t.setMonth(0,1);if(t.getDay()!==4){t.setMonth(0,1+((4-t.getDay())+7)%7);}return 1+Math.ceil((f-t)/604800000);}
 function weeklyAvg(entries){
   const weeks=new Map();
   entries.forEach(e=>{
-    const d=new Date(e.date),dw=d.getDay();
-    if(dw<1||dw>5) return;
-    if((e.moods||[]).some(m=>m.name==='special practice')) return;
-    if(!e.practiced) return;
-    const key=`${d.getFullYear()}-${getISOWeek(d)}`;
-    if(!weeks.has(key)) weeks.set(key,new Set());
-    weeks.get(key).add(d.toDateString());
+    const d=new Date(e.date),dw=d.getDay();if(dw<1||dw>5)return;
+    const ps=practiceStateFromEntry(e);
+    if(ps==='si'||ps==='sp'||ps==='moon'){
+      const key=`${d.getFullYear()}-${getISOWeek(d)}`;
+      if(!weeks.has(key))weeks.set(key,new Set());
+      weeks.get(key).add(d.toDateString());
+    }
   });
-  if(!weeks.size) return 0;
-  return [...weeks.values()].reduce((s,v)=>s+v.size,0)/weeks.size;
+  if(!weeks.size)return 0;
+  return[...weeks.values()].reduce((s,v)=>s+v.size,0)/weeks.size;
 }
 function updateStats(){
-  const filtered=filterByPeriod(logHistory);
-  const spDays=new Set(), yesDays=new Set();
-  filtered.forEach(e=>{
-    const ds=new Date(e.date).toDateString();
-    if((e.moods||[]).some(m=>m.name==='special practice')) spDays.add(ds);
-    else if(e.practiced) yesDays.add(ds);
-  });
+  const filtered=filterByPeriod(logHistory,hFilterPeriod,customRange);
   const avg=weeklyAvg(filtered).toFixed(1);
-  const months=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const months=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
   const today=new Date();
-  let label='';
-  if(currentPeriod==='month') label=`Mes de <b>${months[today.getMonth()]}</b>`;
-  else if(currentPeriod==='year') label=`Año <b>${today.getFullYear()}</b>`;
-  else if(currentPeriod==='week') label='Esta <b>semana</b>';
-  else if(currentPeriod==='custom'&&customRange) label=`Custom`;
-  document.getElementById('stats-summary').innerHTML=`${label} · <b>${avg} días/sem</b> · ${yesDays.size} prácticas · ${spDays.size} SP`;
-  renderChart(getCatData(filtered,MOOD_CATS.moods),document.getElementById('mood-chart'));
-  renderChart(getCatData(filtered,MOOD_CATS.practice),document.getElementById('practice-chart'));
-  // also refresh history with same filter
+  let lbl='';
+  if(hFilterPeriod==='month') lbl=`${months[today.getMonth()]} ${today.getFullYear()}`;
+  else if(hFilterPeriod==='year') lbl=`${today.getFullYear()}`;
+  else if(hFilterPeriod==='week') lbl='Esta semana';
+  else if(hFilterPeriod==='custom'&&customRange) lbl='Periodo custom';
+  else lbl='Todo el registro';
+  const goal=weeklyGoal||5;
+  const pct=Math.min(100,Math.round((parseFloat(avg)/goal)*100));
+  document.getElementById('stats-summary').innerHTML=`${lbl} · <b>${avg}/${goal} días/sem</b> · ${pct}% del goal`;
+  renderChart(getCatData(filtered,['feliz','enojado','neutral']),document.getElementById('mood-chart'));
+  renderChart(getCatData(filtered,['complete','inconclusa']),document.getElementById('comp-chart'));
+  renderChart(getCatData(filtered,['primera','segundo','otro estilo','yin','fitness']),document.getElementById('style-chart'));
   displayLogHistory(filtered);
 }
 function getCatData(entries,cats){
   const counts={};
-  MOODS.filter(m=>cats.includes(m.name)).forEach(m=>{counts[m.name]={label:m.label,count:0,color:m.color,emoji:m.emoji};});
-  entries.forEach(e=>(e.moods||[]).forEach(m=>{if(counts[m.name]) counts[m.name].count++;}));
+  cats.forEach(n=>{if(MOOD_MAP[n])counts[n]={label:n,count:0,color:MOOD_MAP[n].color,emoji:MOOD_MAP[n].emoji};});
+  entries.forEach(e=>(e.moods||[]).forEach(m=>{if(counts[m.name])counts[m.name].count++;}));
   return Object.values(counts).filter(d=>d.count>0).sort((a,b)=>b.count-a.count);
 }
 function renderChart(data,el){
   el.innerHTML='';
-  if(!data.length){el.innerHTML='<div class="loading" style="padding:8px;">sin datos</div>';return;}
+  if(!data.length){el.innerHTML='<div style="font-size:.7rem;color:#999;padding:8px 0;">sin datos</div>';return;}
   const max=Math.max(...data.map(d=>d.count));
   data.forEach(d=>{
-    const bar=document.createElement('div'); bar.className='chart-bar';
-    bar.style.height=`${(d.count/max)*100}%`;
-    bar.style.backgroundColor=d.color;
+    const bar=document.createElement('div');bar.className='chart-bar';
+    bar.style.height=`${(d.count/max)*100}%`;bar.style.backgroundColor=d.color;
     bar.innerHTML=`<div class="chart-value">${d.count}</div>
       <div class="chart-label"><div class="chart-mood-circle" style="background:${d.color}" title="${d.label}">${d.emoji}</div></div>`;
     el.appendChild(bar);
   });
 }
 
-/* ── PERIOD BUTTONS ── */
-function setupPeriodBtns(){
-  document.querySelectorAll('#period-pills .period-btn').forEach(btn=>{
+/* ── HISTORY FILTER MODAL ── */
+let hFilterPracticeState='all';
+function setupHFilterModal(){
+  document.getElementById('history-filter-btn').addEventListener('click',()=>{initFilterMoodBoard();updateFilterTagsList();openModal('hfilter-modal');});
+  // period inside modal
+  document.querySelectorAll('#hfilter-period-pills .period-btn').forEach(btn=>{
     btn.addEventListener('click',function(){
-      document.querySelectorAll('#period-pills .period-btn').forEach(b=>b.classList.remove('active'));
-      this.classList.add('active');
-      currentPeriod=this.dataset.period;
-      const cdw=document.getElementById('custom-date-wrap');
-      cdw.style.display=currentPeriod==='custom'?'block':'none';
-      if(currentPeriod!=='custom') updateStats();
+      document.querySelectorAll('#hfilter-period-pills .period-btn').forEach(b=>b.classList.remove('active'));
+      this.classList.add('active');hFilterPeriod=this.dataset.period;
+      const cw=document.getElementById('hfilter-custom-wrap');
+      cw.style.display=hFilterPeriod==='custom'?'block':'none';
     });
   });
-  document.getElementById('apply-custom').addEventListener('click',()=>{
-    const f=document.getElementById('custom-from').value;
-    const t=document.getElementById('custom-to').value;
-    if(!f||!t) return alert('Seleccioná ambas fechas');
-    customRange={from:new Date(f),to:new Date(t)};
-    updateStats();
+  // practice state filter
+  document.querySelectorAll('[data-pstate]').forEach(btn=>{
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('[data-pstate]').forEach(b=>b.classList.remove('active'));
+      this.classList.add('active');hFilterPracticeState=this.dataset.pstate;
+    });
   });
-  // default dates
-  const today=new Date(), ago=new Date(); ago.setDate(today.getDate()-30);
-  document.getElementById('custom-from').valueAsDate=ago;
-  document.getElementById('custom-to').valueAsDate=today;
+  // tag filter
+  document.getElementById('filter-tag-input').addEventListener('input',function(){updateFilterTagsList(this.value.toLowerCase());});
+  // apply / clear
+  document.getElementById('apply-hfilter').addEventListener('click',()=>{
+    if(hFilterPeriod==='custom'){
+      const f=document.getElementById('hfilter-from').value;
+      const t=document.getElementById('hfilter-to').value;
+      customRange=f&&t?{from:new Date(f),to:new Date(t)}:null;
+    }else customRange=null;
+    updateStats();updateFilterDot();closeModal('hfilter-modal');
+  });
+  document.getElementById('clear-hfilter').addEventListener('click',()=>{
+    hFilters={tags:[],moods:[],pstate:null};hFilterPeriod='all';hFilterPracticeState='all';customRange=null;
+    document.querySelectorAll('#hfilter-period-pills .period-btn').forEach(b=>{b.classList.remove('active');if(b.dataset.period==='all')b.classList.add('active');});
+    document.querySelectorAll('[data-pstate]').forEach(b=>{b.classList.remove('active');if(b.dataset.pstate==='all')b.classList.add('active');});
+    document.querySelectorAll('.filter-mood-item').forEach(i=>i.classList.remove('selected'));
+    document.getElementById('filter-tag-input').value='';
+    document.getElementById('hfilter-custom-wrap').style.display='none';
+    updateFilterTagsList();updateStats();updateFilterDot();closeModal('hfilter-modal');
+  });
+}
+function updateFilterTagsList(q=''){
+  const allTags=new Set();logHistory.forEach(e=>(e.tags||[]).forEach(t=>allTags.add(t)));
+  const list=[...allTags].filter(t=>!q||t.toLowerCase().includes(q));
+  const c=document.getElementById('filter-tags-list');
+  c.innerHTML=list.map(tag=>{const sel=hFilters.tags.includes(tag);return`<span class="tag" data-tag="${tag}" style="cursor:pointer!important;opacity:${sel?1:.6};">${tag}</span>`;}).join('');
+  c.querySelectorAll('.tag').forEach(el=>el.addEventListener('click',()=>{const t=el.dataset.tag,idx=hFilters.tags.indexOf(t);idx===-1?hFilters.tags.push(t):hFilters.tags.splice(idx,1);updateFilterTagsList(q);}));
+}
+function initFilterMoodBoard(){
+  const board=document.getElementById('filter-mood-board');
+  board.innerHTML=Object.entries(MOOD_MAP).map(([name,m])=>`<div class="filter-mood-item${hFilters.moods.includes(name)?' selected':''}" data-mood="${name}" style="background:${m.color}" title="${name}">${m.emoji}</div>`).join('');
+  board.querySelectorAll('.filter-mood-item').forEach(el=>el.addEventListener('click',()=>{el.classList.toggle('selected');const mn=el.dataset.mood,idx=hFilters.moods.indexOf(mn);idx===-1?hFilters.moods.push(mn):hFilters.moods.splice(idx,1);}));
+}
+function updateFilterDot(){
+  const btn=document.getElementById('history-filter-btn');
+  const has=hFilters.tags.length||hFilters.moods.length||hFilterPeriod!=='all'||hFilterPracticeState!=='all';
+  const ex=btn.querySelector('.filters-dot');
+  if(has&&!ex){const d=document.createElement('div');d.className='filters-dot';btn.appendChild(d);}
+  else if(!has&&ex)ex.remove();
 }
 
-/* ── LOG HISTORY ── */
+/* ── LOG HISTORY DISPLAY ── */
 function applyHFilters(entries){
   return entries.filter(e=>{
-    if(hFilters.tags.length&&!(e.tags||[]).some(t=>hFilters.tags.includes(t))) return false;
-    if(hFilters.moods.length&&!(e.moods||[]).some(m=>hFilters.moods.includes(m.name))) return false;
-    if(hFilters.practiced!==null&&e.practiced!==hFilters.practiced) return false;
+    if(hFilters.tags.length&&!(e.tags||[]).some(t=>hFilters.tags.includes(t)))return false;
+    if(hFilters.moods.length&&!(e.moods||[]).some(m=>hFilters.moods.includes(m.name)))return false;
+    if(hFilterPracticeState!=='all'){const ps=practiceStateFromEntry(e);if(ps!==hFilterPracticeState)return false;}
     return true;
   });
 }
 function displayLogHistory(periodFiltered){
   const container=document.getElementById('log-history');
-  // apply both period filter and hFilters
-  const base=periodFiltered||filterByPeriod(logHistory);
+  const base=periodFiltered||filterByPeriod(logHistory,hFilterPeriod,customRange);
   const filtered=applyHFilters([...base]).sort((a,b)=>new Date(b.date)-new Date(a.date));
   if(!filtered.length){container.innerHTML='<div class="loading">Sin entradas que coincidan</div>';return;}
   container.innerHTML=filtered.map(e=>{
     const date=new Date(e.date).toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'}).replace(/\//g,'.');
-    const moods=(e.moods||[]).map(m=>`<div class="mood-chip" style="background:${m.color}">${m.emoji}</div>`).join('');
+    const ps=practiceStateFromEntry(e);
+    const dotClass={si:'pd-si',no:'pd-no',sp:'pd-sp',moon:'pd-moon'}[ps]||'pd-no';
+    const dotText={si:'SÍ',no:'NO',sp:'SP',moon:'🌕'}[ps]||'NO';
+    const moodNames=['feliz','enojado','neutral'];
+    const moodsHTML=(e.moods||[]).filter(m=>moodNames.includes(m.name)).map(m=>`<div class="mood-chip" style="background:${MOOD_MAP[m.name]?.color||'#999'}">${MOOD_MAP[m.name]?.emoji||''}</div>`).join('');
+    const stylesHTML=(e.moods||[]).filter(m=>!moodNames.includes(m.name)&&m.name!=='special practice'&&m.name!=='moon day').map(m=>`<div class="mood-chip" style="background:${MOOD_MAP[m.name]?.color||'#999'}">${MOOD_MAP[m.name]?.emoji||''}</div>`).join('');
     const tags=(e.tags||[]).length?`<div class="detail"><strong>Tags:</strong> ${e.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`:'';
     const asan=(e.asanas||[]).length?`<div class="detail"><strong>Āsanas:</strong> ${e.asanas.map(a=>`<span class="tag">${a.name}</span>`).join('')}</div>`:'';
-    return `<div class="history-entry" data-id="${e.id}">
-      <div class="entry-header">
-        <div class="entry-date">${date}</div>
-        <div class="entry-actions">
-          <button class="icon-btn edit-entry-btn" data-id="${e.id}"><i class="fa-solid fa-pen"></i></button>
-          <button class="icon-btn delete-entry-btn" data-id="${e.id}"><i class="fa-solid fa-trash"></i></button>
-        </div>
-      </div>
-      <div class="mood-row">
-        <div class="practice-dot ${e.practiced?'yes':'no'}">${e.practiced?'SÍ':'NO'}</div>
-        ${moods}
-      </div>
-      <div class="detail"><strong>Notas:</strong> ${e.notes||'—'}</div>
-      ${tags}${asan}
+    const editClass=isUnlocked?'':'style="display:none"';
+    return`<div class="history-entry"><div class="entry-header">
+      <div class="entry-date">${date}</div>
+      <div class="entry-actions">
+        <button class="icon-btn edit-entry-btn" data-id="${e.id}" ${editClass}><i class="fa-solid fa-pen"></i></button>
+        <button class="icon-btn delete-entry-btn" data-id="${e.id}" style="background:var(--red);${isUnlocked?'':'display:none'}"><i class="fa-solid fa-trash"></i></button>
+      </div></div>
+      <div class="mood-row"><div class="practice-dot ${dotClass}">${dotText}</div>${moodsHTML}${stylesHTML}</div>
+      <div class="detail"><strong>Notas:</strong> ${e.notes||'—'}</div>${tags}${asan}
     </div>`;
   }).join('');
-  container.querySelectorAll('.delete-entry-btn').forEach(btn=>{
-    btn.addEventListener('click',async()=>{
-      if(!confirm('¿Eliminar esta entrada?')) return;
-      await supabaseClient.from('navanga_entries').delete().eq('id',btn.dataset.id);
-      logHistory=logHistory.filter(e=>e.id.toString()!==btn.dataset.id);
-      updateStats(); updateTodayCard();
-    });
-  });
-  container.querySelectorAll('.edit-entry-btn').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      const entry=logHistory.find(e=>e.id.toString()===btn.dataset.id);
-      if(entry) showLogModal(entry);
-    });
-  });
+  container.querySelectorAll('.delete-entry-btn').forEach(btn=>btn.addEventListener('click',async()=>{
+    if(!confirm('¿Eliminar esta entrada?'))return;
+    await supabaseClient.from('navanga_entries').delete().eq('id',btn.dataset.id);
+    logHistory=logHistory.filter(e=>e.id.toString()!==btn.dataset.id);
+    updateStats();updateTodayCard();
+  }));
+  container.querySelectorAll('.edit-entry-btn').forEach(btn=>btn.addEventListener('click',()=>{
+    const entry=logHistory.find(e=>e.id.toString()===btn.dataset.id);
+    if(entry)showLogModal(entry);
+  }));
 }
-
 async function loadLogHistory(){
-  const {data,error}=await supabaseClient.from('navanga_entries').select('*').order('date',{ascending:false});
+  const{data,error}=await supabaseClient.from('navanga_entries').select('*').order('date',{ascending:false});
   if(error){console.error(error);return;}
-  logHistory=(data||[]).map(e=>{
-    const d=new Date(e.date);
-    return{...e,date:new Date(d.getFullYear(),d.getMonth(),d.getDate())};
-  });
+  logHistory=(data||[]).map(e=>{const d=new Date(e.date);return{...e,date:new Date(d.getFullYear(),d.getMonth(),d.getDate())};});
+  loadMoonPhases();
   updateStats();
-  loadMoonPhases(); // calls updateTodayCard internally after filling moonPhases
+  await loadGoal();
+  updateStats();
   await loadStudyStats();
   showRandomAsana();
 }
 
-/* ── HISTORY FILTER MODAL ── */
-function setupHFilterModal(){
-  document.getElementById('history-filter-btn').addEventListener('click',()=>{
-    initFilterMoodBoard();
-    updateFilterTagsList();
-    openModal('hfilter-modal');
-  });
-  // practice toggle
-  let pState=null;
-  const pt=document.getElementById('filter-practice-toggle');
-  pt.addEventListener('click',()=>{
-    if(pState===null){pState=true;pt.classList.remove('no');pt.classList.add('yes');pt.textContent='SÍ';}
-    else if(pState===true){pState=false;pt.classList.remove('yes');pt.classList.add('no');pt.textContent='NO';}
-    else{pState=null;pt.classList.remove('yes');pt.classList.add('no');pt.textContent='NO';}
-    hFilters.practiced=pState;
-  });
-  document.getElementById('filter-tag-input').addEventListener('input',function(){updateFilterTagsList(this.value.toLowerCase());});
-  document.getElementById('apply-hfilter').addEventListener('click',()=>{updateStats();updateFilterDot();closeModal('hfilter-modal');});
-  document.getElementById('clear-hfilter').addEventListener('click',()=>{
-    hFilters={tags:[],moods:[],practiced:null};
-    pState=null; pt.classList.remove('yes'); pt.classList.add('no'); pt.textContent='NO';
-    document.querySelectorAll('.filter-mood-item').forEach(i=>i.classList.remove('selected'));
-    document.getElementById('filter-tag-input').value='';
-    updateFilterTagsList(); updateStats(); updateFilterDot(); closeModal('hfilter-modal');
-  });
-}
-function updateFilterTagsList(q=''){
-  const allTags=new Set(); logHistory.forEach(e=>(e.tags||[]).forEach(t=>allTags.add(t)));
-  const list=[...allTags].filter(t=>!q||t.toLowerCase().includes(q));
-  const c=document.getElementById('filter-tags-list');
-  c.innerHTML=list.map(tag=>{
-    const sel=hFilters.tags.includes(tag);
-    return `<span class="tag" data-tag="${tag}" style="cursor:pointer!important;opacity:${sel?1:.6};">${tag}</span>`;
-  }).join('');
-  c.querySelectorAll('.tag').forEach(el=>el.addEventListener('click',()=>{
-    const t=el.dataset.tag,idx=hFilters.tags.indexOf(t);
-    idx===-1?hFilters.tags.push(t):hFilters.tags.splice(idx,1);
-    updateFilterTagsList(q);
-  }));
-}
-function initFilterMoodBoard(){
-  const board=document.getElementById('filter-mood-board');
-  board.innerHTML=MOODS.map(m=>`<div class="filter-mood-item${hFilters.moods.includes(m.name)?' selected':''}" data-mood="${m.name}" style="background:${m.color}" title="${m.label}">${m.emoji}</div>`).join('');
-  board.querySelectorAll('.filter-mood-item').forEach(el=>el.addEventListener('click',()=>{
-    el.classList.toggle('selected');
-    const mn=el.dataset.mood,idx=hFilters.moods.indexOf(mn);
-    idx===-1?hFilters.moods.push(mn):hFilters.moods.splice(idx,1);
-  }));
-}
-function updateFilterDot(){
-  const btn=document.getElementById('history-filter-btn');
-  const has=hFilters.tags.length||hFilters.moods.length||hFilters.practiced!==null;
-  const existing=btn.querySelector('.filters-dot');
-  if(has&&!existing){const d=document.createElement('div');d.className='filters-dot';btn.appendChild(d);}
-  else if(!has&&existing) existing.remove();
-}
-
 /* ── LOG MODAL ── */
+let currentLogEntry={},currentTags=[],currentAsanas=[];
+let currentMood=null,currentComp=null,currentStyle=null,currentPState='no';
+const PSTATE_CYCLE=['no','si','sp','moon'];
+const PSTATE_COLORS={si:'var(--green6)',no:'var(--red)',sp:'var(--blue)',moon:'#ced4da'};
+const PSTATE_TEXT={si:'SÍ',no:'NO',sp:'SP',moon:'🌕'};
+const PSTATE_DESC={si:'¡Practicaste hoy!',no:'No practicaste hoy',sp:'Special Practice (yoga sin ashtanga)',moon:'Moon Day (luna llena/nueva)'};
+
+function updatePCB(){
+  const dot=document.getElementById('pcb-dot');
+  const lbl=document.getElementById('pcb-label');
+  const btn=document.getElementById('practice-cycle-btn');
+  dot.className='pcb-dot';
+  dot.style.background=PSTATE_COLORS[currentPState];
+  dot.style.color=currentPState==='moon'?'#333':'#fff';
+  dot.textContent=PSTATE_TEXT[currentPState];
+  lbl.textContent=PSTATE_DESC[currentPState];
+  btn.style.background=currentPState==='si'?'rgba(81,91,68,.08)':currentPState==='sp'?'rgba(47,73,246,.08)':currentPState==='moon'?'rgba(206,212,218,.2)':'rgba(246,68,47,.06)';
+  // show/hide mood/comp/style groups based on state
+  const showGroups=currentPState==='si'||currentPState==='sp';
+  document.getElementById('mood-group').style.display=showGroups?'block':'none';
+  document.getElementById('comp-group').style.display=currentPState==='si'?'block':'none';
+  document.getElementById('style-group').style.display=currentPState==='si'?'block':'none';
+}
+document.getElementById('practice-cycle-btn').addEventListener('click',()=>{
+  const idx=PSTATE_CYCLE.indexOf(currentPState);
+  currentPState=PSTATE_CYCLE[(idx+1)%PSTATE_CYCLE.length];
+  updatePCB();
+});
+// mood buttons (exclusive)
+document.querySelectorAll('.mood-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    const m=this.dataset.mood;
+    if(currentMood===m){currentMood=null;this.classList.remove('active');}
+    else{document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');currentMood=m;}
+  });
+});
+// completeness buttons (exclusive)
+document.querySelectorAll('.completeness-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    const c=this.dataset.comp;
+    if(currentComp===c){currentComp=null;this.classList.remove('active');}
+    else{document.querySelectorAll('.completeness-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');currentComp=c;}
+  });
+});
+// style buttons (exclusive)
+document.querySelectorAll('.style-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    const s=this.dataset.style;
+    if(currentStyle===s){currentStyle=null;this.classList.remove('active');}
+    else{document.querySelectorAll('.style-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');currentStyle=s;}
+  });
+});
+
 function showLogModal(entry=null){
   clearLogForm();
   document.getElementById('log-modal-title').textContent=entry?'EDITAR REGISTRO':'NUEVO REGISTRO';
-  if(entry) loadEntryIntoForm(entry);
+  if(entry)loadEntryIntoForm(entry);
   openModal('log-modal');
 }
-document.getElementById('new-log-btn').addEventListener('click',()=>showLogModal());
-document.getElementById('new-log-btn2').addEventListener('click',()=>showLogModal());
-document.getElementById('save-log-btn').addEventListener('click',saveLogEntry);
-document.getElementById('clear-log-btn').addEventListener('click',clearLogForm);
-
 function clearLogForm(){
-  currentLogEntry={id:null};
-  selectedMoods=[]; currentTags=[]; currentAsanas=[];
-  const pb=document.getElementById('practice-button');
-  pb.classList.remove('yes'); pb.classList.add('no'); pb.textContent='NO';
-  document.querySelectorAll('.mood-item').forEach(i=>i.classList.remove('selected'));
+  currentLogEntry={id:null};currentTags=[];currentAsanas=[];
+  currentMood=null;currentComp=null;currentStyle=null;currentPState='no';
+  document.querySelectorAll('.mood-btn,.completeness-btn,.style-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('practice-date').valueAsDate=new Date();
   document.getElementById('practice-notes').value='';
-  updateTagsDisplay(); updateAsanasDisplay();
+  updatePCB();updateTagsDisplay();updateAsanasDisplay();
 }
 function loadEntryIntoForm(entry){
   currentLogEntry={...entry};
-  const pb=document.getElementById('practice-button');
-  if(entry.practiced){pb.classList.add('yes');pb.classList.remove('no');pb.textContent='SÍ';}
-  (entry.moods||[]).forEach(mood=>{
-    const idx=MOODS.findIndex(m=>m.name===mood.name);
-    if(idx!==-1){selectedMoods.push(idx);document.querySelector(`.mood-item[data-index="${idx}"]`)?.classList.add('selected');}
-  });
-  if(entry.date){document.getElementById('practice-date').valueAsDate=new Date(entry.date);}
+  // detect pstate from moods
+  const moods=entry.moods||[];
+  if(moods.some(m=>m.name==='moon day')) currentPState='moon';
+  else if(moods.some(m=>m.name==='special practice')) currentPState='sp';
+  else if(entry.practiced) currentPState='si';
+  else currentPState='no';
+  updatePCB();
+  // mood
+  const moodEntry=moods.find(m=>['feliz','enojado','neutral'].includes(m.name));
+  if(moodEntry){currentMood=moodEntry.name;document.querySelector(`.mood-btn[data-mood="${moodEntry.name}"]`)?.classList.add('active');}
+  // comp
+  const compEntry=moods.find(m=>['complete','inconclusa'].includes(m.name));
+  if(compEntry){currentComp=compEntry.name;document.querySelector(`.completeness-btn[data-comp="${compEntry.name}"]`)?.classList.add('active');}
+  // style
+  const styleEntry=moods.find(m=>['primera','segunda','otro estilo','yin','fitness'].includes(m.name));
+  if(styleEntry){currentStyle=styleEntry.name;document.querySelector(`.style-btn[data-style="${styleEntry.name}"]`)?.classList.add('active');}
+  if(entry.date)document.getElementById('practice-date').valueAsDate=new Date(entry.date);
   document.getElementById('practice-notes').value=entry.notes||'';
-  currentTags=[...(entry.tags||[])]; updateTagsDisplay();
-  currentAsanas=[...(entry.asanas||[])]; updateAsanasDisplay();
+  currentTags=[...(entry.tags||[])];updateTagsDisplay();
+  currentAsanas=[...(entry.asanas||[])];updateAsanasDisplay();
 }
 async function saveLogEntry(){
   const dateVal=document.getElementById('practice-date').value;
   let entryDate;
   if(dateVal){const[y,mo,d]=dateVal.split('-');entryDate=new Date(y,mo-1,d);}
   else{const n=new Date();entryDate=new Date(n.getFullYear(),n.getMonth(),n.getDate());}
-  const pb=document.getElementById('practice-button');
-  const entryData={
-    date:entryDate.toISOString(),
-    practiced:pb.classList.contains('yes'),
-    moods:selectedMoods.map(i=>MOODS[i]),
-    notes:document.getElementById('practice-notes').value,
-    tags:[...currentTags],asanas:[...currentAsanas],
-  };
+  // build moods array from state
+  const moodsArr=[];
+  if(currentPState==='sp') moodsArr.push({name:'special practice',...MOOD_MAP['special practice']});
+  if(currentPState==='moon') moodsArr.push({name:'moon day',...MOOD_MAP['moon day']});
+  if(currentMood) moodsArr.push({name:currentMood,...MOOD_MAP[currentMood]});
+  if(currentComp) moodsArr.push({name:currentComp,...MOOD_MAP[currentComp]});
+  if(currentStyle) moodsArr.push({name:currentStyle,...MOOD_MAP[currentStyle]});
+  const practiced=currentPState==='si';
+  const entryData={date:entryDate.toISOString(),practiced,moods:moodsArr,notes:document.getElementById('practice-notes').value,tags:[...currentTags],asanas:[...currentAsanas]};
   if(currentLogEntry.id) entryData.id=currentLogEntry.id;
   try{
     const{error}=await supabaseClient.from('navanga_entries').upsert([entryData]);
-    if(error) throw error;
-    await loadLogHistory();
-    closeModal('log-modal');
+    if(error)throw error;
+    await loadLogHistory();closeModal('log-modal');
     alert(currentLogEntry.id?'Entrada actualizada':'Entrada guardada');
   }catch(e){alert('Error: '+e.message);}
 }
-
-/* ── MOOD BOARD (form) ── */
-function initMoodBoard(){
-  const board=document.getElementById('mood-board');
-  board.innerHTML=MOODS.map((m,i)=>`<div class="mood-item" data-index="${i}" style="background:${m.color}" title="${m.label}">${m.emoji}</div>`).join('');
-  board.querySelectorAll('.mood-item').forEach(el=>el.addEventListener('click',()=>{
-    const idx=parseInt(el.dataset.index);
-    if(selectedMoods.includes(idx)){selectedMoods=selectedMoods.filter(i=>i!==idx);el.classList.remove('selected');}
-    else{selectedMoods.push(idx);el.classList.add('selected');}
-  }));
-  document.getElementById('practice-button').addEventListener('click',function(){
-    this.classList.toggle('yes'); this.classList.toggle('no');
-    this.textContent=this.classList.contains('yes')?'SÍ':'NO';
-  });
-}
+document.getElementById('new-log-btn').addEventListener('click',()=>showLogModal());
+document.getElementById('new-log-btn2').addEventListener('click',()=>showLogModal());
+document.getElementById('save-log-btn').addEventListener('click',saveLogEntry);
+document.getElementById('clear-log-btn').addEventListener('click',clearLogForm);
 
 /* ── TAG SEARCH ── */
 function setupTagSearch(){
   const input=document.getElementById('tag-input');
   const results=document.getElementById('tag-search-results');
   input.addEventListener('input',function(){
-    const q=this.value.toLowerCase().trim();
-    if(q.length<1){results.style.display='none';return;}
-    const allTags=new Set(); logHistory.forEach(e=>(e.tags||[]).forEach(t=>allTags.add(t)));
+    const q=this.value.toLowerCase().trim();if(q.length<1){results.style.display='none';return;}
+    const allTags=new Set();logHistory.forEach(e=>(e.tags||[]).forEach(t=>allTags.add(t)));
     const filtered=[...allTags].filter(t=>t.toLowerCase().includes(q)).slice(0,8);
     if(!filtered.length){results.style.display='none';return;}
     results.innerHTML=filtered.map(t=>`<div class="search-result" data-tag="${t}">${t}</div>`).join('');
@@ -1185,7 +1072,7 @@ function setupTagSearch(){
     results.querySelectorAll('.search-result').forEach(el=>el.addEventListener('click',()=>{addTag(el.dataset.tag);input.value='';results.style.display='none';}));
   });
   document.getElementById('add-tag-btn').addEventListener('click',()=>{const v=input.value.trim();if(v){addTag(v);input.value='';}});
-  document.addEventListener('click',e=>{if(!e.target.closest('.input-row')) results.style.display='none';});
+  document.addEventListener('click',e=>{if(!e.target.closest('.input-row'))results.style.display='none';});
 }
 function addTag(t){if(!currentTags.includes(t)){currentTags.push(t);updateTagsDisplay();}}
 function updateTagsDisplay(){
@@ -1195,26 +1082,20 @@ function updateTagsDisplay(){
 }
 
 /* ── ASANA SEARCH ── */
+let asanasData=[];
 function setupAsanaSearch(){
   const input=document.getElementById('asana-search-input');
   const results=document.getElementById('asana-search-results');
   input.addEventListener('input',function(){
-    const q=this.value.toLowerCase().trim();
-    if(q.length<2){results.style.display='none';return;}
+    const q=this.value.toLowerCase().trim();if(q.length<2){results.style.display='none';return;}
     const filtered=asanasData.filter(a=>a.name.toLowerCase().includes(q)||(a.sandhi&&a.sandhi.toLowerCase().includes(q))||(a.english&&a.english.toLowerCase().includes(q))).slice(0,10);
     if(!filtered.length){results.style.display='none';return;}
     results.innerHTML=filtered.map(a=>`<div class="search-result" data-id="${a.id}"><strong>${a.sandhi||a.name}</strong>${a.english?`<br><small>${a.english}</small>`:''}</div>`).join('');
     results.style.display='block';
-    results.querySelectorAll('.search-result').forEach(el=>el.addEventListener('click',()=>{
-      const a=asanasData.find(x=>x.id===el.dataset.id);
-      if(a){addAsana(a);input.value='';results.style.display='none';}
-    }));
+    results.querySelectorAll('.search-result').forEach(el=>el.addEventListener('click',()=>{const a=asanasData.find(x=>x.id===el.dataset.id);if(a){addAsana(a);input.value='';results.style.display='none';}}));
   });
-  document.getElementById('add-asana-btn').addEventListener('click',()=>{
-    const v=input.value.trim();
-    if(v){addAsana({id:'custom_'+Date.now(),name:v,sanskrit:'',english:''});input.value='';}
-  });
-  document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap')) results.style.display='none';});
+  document.getElementById('add-asana-btn').addEventListener('click',()=>{const v=input.value.trim();if(v){addAsana({id:'custom_'+Date.now(),name:v,sanskrit:'',english:''});input.value='';}});
+  document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))results.style.display='none';});
 }
 function addAsana(a){if(!currentAsanas.some(x=>x.id===a.id)){currentAsanas.push(a);updateAsanasDisplay();}}
 function updateAsanasDisplay(){
@@ -1224,138 +1105,81 @@ function updateAsanasDisplay(){
 }
 
 /* ── ĀSANA CLINIC ── */
+let currentPracticeAsana=null,clinicSeriesFilter='all';
+let studyStats={totalAnswers:0,correctAnswers:0,uniqueAsanas:0,error:false};
 function showRandomAsana(){
-  const series=clinicSeriesFilter;
-  const pool=series==='all'
-    ?asanasData.filter(a=>a.yogaSeries&&a.yogaSeries.trim())
-    :asanasData.filter(a=>a.yogaSeries===series);
-  if(!pool.length) return;
+  const pool=clinicSeriesFilter==='all'?asanasData.filter(a=>a.yogaSeries&&a.yogaSeries.trim()):asanasData.filter(a=>a.yogaSeries===clinicSeriesFilter);
+  if(!pool.length)return;
   currentPracticeAsana=pool[Math.floor(Math.random()*pool.length)];
   const img=document.getElementById('practice-asana-image');
   img.src=`images/${currentPracticeAsana.name}.png`;
   img.onerror=function(){this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzIyMiIvPjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjZmZmIj5OTyBJTUFHRTwvdGV4dD48L3N2Zz4=';};
   const icons={ādhāra:'F',yogacikitsā:'1','nāḍī śodhana':'2','tṛtīya śreṇī':'3',pṛṣṭhavakrāsana:'B',samāpana:'C'};
   const sc=document.getElementById('practice-series-circle');
-  sc.textContent=icons[currentPracticeAsana.yogaSeries]||'';
-  sc.style.display=icons[currentPracticeAsana.yogaSeries]?'flex':'none';
-  document.getElementById('sanskrit-hidden').style.display='block';
-  document.getElementById('sanskrit-revealed').style.display='none';
+  sc.textContent=icons[currentPracticeAsana.yogaSeries]||'';sc.style.display=icons[currentPracticeAsana.yogaSeries]?'flex':'none';
+  document.getElementById('sanskrit-hidden').style.display='block';document.getElementById('sanskrit-revealed').style.display='none';
   document.getElementById('sanskrit-name').textContent=currentPracticeAsana.sandhi||currentPracticeAsana.sanskrit||'N/D';
 }
-document.getElementById('show-answer-btn').addEventListener('click',()=>{
-  document.getElementById('sanskrit-hidden').style.display='none';
-  document.getElementById('sanskrit-revealed').style.display='block';
-});
+document.getElementById('show-answer-btn').addEventListener('click',()=>{document.getElementById('sanskrit-hidden').style.display='none';document.getElementById('sanskrit-revealed').style.display='block';});
 document.getElementById('correct-btn').addEventListener('click',()=>recordAnswer(true));
 document.getElementById('incorrect-btn').addEventListener('click',()=>recordAnswer(false));
 async function recordAnswer(correct){
-  if(!currentPracticeAsana) return;
-  try{await supabaseClient.from('navanga_studies').insert([{fecha:new Date().toISOString().split('T')[0],correct,asana_id:currentPracticeAsana.id}]);}
-  catch(e){console.error(e);}
-  await loadStudyStats();
-  showRandomAsana();
+  if(!currentPracticeAsana)return;
+  try{await supabaseClient.from('navanga_studies').insert([{fecha:new Date().toISOString().split('T')[0],correct,asana_id:currentPracticeAsana.id}]);}catch(e){console.error(e);}
+  await loadStudyStats();showRandomAsana();
 }
 async function loadStudyStats(){
   try{
     const{data:all,error:e1}=await supabaseClient.from('navanga_studies').select('*');
     const{data:corr}=await supabaseClient.from('navanga_studies').select('*').eq('correct',true);
     const{data:uniq}=await supabaseClient.from('navanga_studies').select('asana_id');
-    if(e1) throw e1;
-    studyStats.totalAnswers=all?.length||0;
-    studyStats.correctAnswers=corr?.length||0;
-    studyStats.uniqueAsanas=new Set((uniq||[]).map(i=>i.asana_id)).size;
-    studyStats.error=false;
-  }catch(e){
-    console.error('loadStudyStats error:',e);
-    studyStats.error=true;
-  }
+    if(e1)throw e1;
+    studyStats.totalAnswers=all?.length||0;studyStats.correctAnswers=corr?.length||0;
+    studyStats.uniqueAsanas=new Set((uniq||[]).map(i=>i.asana_id)).size;studyStats.error=false;
+  }catch(e){studyStats.error=true;}
 }
-document.getElementById('study-stats-btn').addEventListener('click', async ()=>{
-  const body = document.getElementById('study-stats-body');
-  body.innerHTML = '<div class="loading">Cargando...</div>';
-  openModal('study-modal');
-  await loadStudyStats();
-  const pct = studyStats.totalAnswers > 0
-    ? ((studyStats.correctAnswers / studyStats.totalAnswers) * 100).toFixed(1) : 0;
-  body.innerHTML = `
+document.getElementById('study-stats-btn').addEventListener('click',async()=>{
+  const body=document.getElementById('study-stats-body');body.innerHTML='<div class="loading">Cargando...</div>';
+  openModal('study-modal');await loadStudyStats();
+  const pct=studyStats.totalAnswers>0?((studyStats.correctAnswers/studyStats.totalAnswers)*100).toFixed(1):0;
+  body.innerHTML=`<div style="padding:4px 0;">
     <div class="stat-item"><span class="stat-label">Total respuestas</span><span class="stat-value">${studyStats.totalAnswers}</span></div>
     <div class="stat-item"><span class="stat-label">Correctas</span><span class="stat-value">${studyStats.correctAnswers}</span></div>
     <div class="stat-item"><span class="stat-label">Acierto</span><span class="stat-pct">${pct}%</span></div>
     <div class="stat-item"><span class="stat-label">Āsanas estudiados</span><span class="stat-value">${studyStats.uniqueAsanas}</span></div>
-    ${studyStats.error ? `<div style="font-size:.72rem;color:var(--red);margin-top:10px;padding:6px;border:1px solid var(--red);border-radius:3px;">⚠ No se pudo conectar con Supabase. Si usás un adblocker, deshabilitalo para localhost.</div>` : ''}`;
+    ${studyStats.error?`<div style="font-size:.72rem;color:var(--red);margin-top:8px;padding:6px;border:1px solid var(--red);border-radius:3px;">⚠ No se pudo conectar. Deshabilitá el adblocker para localhost.</div>`:''}
+  </div>`;
 });
+document.getElementById('clinic-filter-btn').addEventListener('click',()=>openModal('clinic-filter-modal'));
+document.querySelectorAll('#clinic-series-filters .series-filter').forEach(btn=>{btn.addEventListener('click',function(){document.querySelectorAll('#clinic-series-filters .series-filter').forEach(b=>b.classList.remove('active'));this.classList.add('active');clinicSeriesFilter=this.dataset.series;showRandomAsana();closeModal('clinic-filter-modal');});});
 
-/* ── YOGA MĀLĀ LIST ── */
+/* ── YOGA MĀLĀ ── */
+let malaSeriesFilter='all';
 const SERIES_ORDER=['ādhāra','yogacikitsā','nāḍī śodhana','tṛtīya śreṇī','pṛṣṭhavakrāsana','samāpana'];
 const SERIES_NAMES={ādhāra:'ĀDHĀRA: Fundamentales',yogacikitsā:'YOGA CIKITSĀ: Primera','nāḍī śodhana':'NĀḌĪ ŚODHANA: Segunda','tṛtīya śreṇī':'TṚTĪYA ŚREṆĪ: Tercera',pṛṣṭhavakrāsana:'PṚṢṬHAVAKRĀSANA: Arcos',samāpana:'SAMĀPANA: Cierre'};
-
 function displayAsanasList(){
   const container=document.getElementById('asanas-list');
   let pool=malaSeriesFilter==='all'?asanasData.filter(a=>a.yogaSeries):asanasData.filter(a=>a.yogaSeries===malaSeriesFilter);
   pool=sortAsanas(pool,malaSeriesFilter);
   if(!pool.length){container.innerHTML='<div class="loading">Sin āsanas</div>';return;}
   let html='';
-  if(malaSeriesFilter==='all'){
-    SERIES_ORDER.forEach(s=>{
-      const sa=pool.filter(a=>a.yogaSeries===s); if(!sa.length) return;
-      html+=`<div class="series-subtitle"><span class="series-subtitle-text">${SERIES_NAMES[s]}</span><span class="series-count">${sa.length}</span></div>`;
-      sa.forEach(a=>{html+=asanaHTML(a);});
-    });
-  } else {
-    html+=`<div class="series-subtitle"><span class="series-subtitle-text">${SERIES_NAMES[malaSeriesFilter]||malaSeriesFilter}</span><span class="series-count">${pool.length}</span></div>`;
-    pool.forEach(a=>{html+=asanaHTML(a);});
-  }
+  if(malaSeriesFilter==='all'){SERIES_ORDER.forEach(s=>{const sa=pool.filter(a=>a.yogaSeries===s);if(!sa.length)return;html+=`<div class="series-subtitle"><span class="series-subtitle-text">${SERIES_NAMES[s]}</span><span class="series-count">${sa.length}</span></div>`;sa.forEach(a=>{html+=asanaHTML(a);});});}
+  else{html+=`<div class="series-subtitle"><span class="series-subtitle-text">${SERIES_NAMES[malaSeriesFilter]||malaSeriesFilter}</span><span class="series-count">${pool.length}</span></div>`;pool.forEach(a=>{html+=asanaHTML(a);});}
   container.innerHTML=html;
-  container.querySelectorAll('.asana-item').forEach(el=>el.addEventListener('click',()=>{
-    const a=asanasData.find(x=>x.id===el.dataset.id); if(a) showAsanaModal(a);
-  }));
+  container.querySelectorAll('.asana-item').forEach(el=>el.addEventListener('click',()=>{const a=asanasData.find(x=>x.id===el.dataset.id);if(a)showAsanaModal(a);}));
 }
-function asanaHTML(a){return `<div class="asana-item" data-id="${a.id}"><div class="asana-sanskrit"><b>${a.sandhi||a.sanskrit||''}</b><br>${a.english||''}</div></div>`;}
-
-function sortAsanas(asanas,series){
-  if(series==='all') return SERIES_ORDER.flatMap(s=>sortWithinSeries(asanas.filter(a=>a.yogaSeries===s),s));
-  return sortWithinSeries(asanas,series);
-}
-function sortWithinSeries(asanas,series){
-  const map={}; asanas.forEach(a=>map[a.name]=a);
-  const starts={ādhāra:'Samasthiti',yogacikitsā:'Parsvottanasana','nāḍī śodhana':'Pasasana','tṛtīya śreṇī':'Adho Mukha Vrksasana',pṛṣṭhavakrāsana:'Urdhva Dhanurasana',samāpana:'Sarvangasana'};
-  let cur=map[starts[series]]||asanas.find(a=>!a.before||!map[exName(a.before)])||asanas[0];
-  const sorted=[],visited=new Set();
-  while(cur&&!visited.has(cur.name)){visited.add(cur.name);sorted.push(cur);cur=cur.after?map[exName(cur.after)]:null;}
-  asanas.forEach(a=>{if(!visited.has(a.name)) sorted.push(a);});
-  return sorted;
-}
-function exName(text){if(!text) return null;const m=text.match(/\[\[(.*?)\]\]/);return m?m[1]:text.split(',')[0].trim();}
-
-/* Clinic filter modal */
-document.getElementById('clinic-filter-btn').addEventListener('click',()=>openModal('clinic-filter-modal'));
-document.querySelectorAll('#clinic-series-filters .series-filter').forEach(btn=>{
-  btn.addEventListener('click',function(){
-    document.querySelectorAll('#clinic-series-filters .series-filter').forEach(b=>b.classList.remove('active'));
-    this.classList.add('active');
-    clinicSeriesFilter=this.dataset.series;
-    showRandomAsana();
-    closeModal('clinic-filter-modal');
-  });
-});
+function asanaHTML(a){return`<div class="asana-item" data-id="${a.id}"><div class="asana-sanskrit"><b>${a.sandhi||a.sanskrit||''}</b><br>${a.english||''}</div></div>`;}
+function sortAsanas(asanas,series){if(series==='all')return SERIES_ORDER.flatMap(s=>sortWithinSeries(asanas.filter(a=>a.yogaSeries===s),s));return sortWithinSeries(asanas,series);}
+function sortWithinSeries(asanas,series){const map={};asanas.forEach(a=>map[a.name]=a);const starts={ādhāra:'Samasthiti',yogacikitsā:'Parsvottanasana','nāḍī śodhana':'Pasasana','tṛtīya śreṇī':'Adho Mukha Vrksasana',pṛṣṭhavakrāsana:'Urdhva Dhanurasana',samāpana:'Sarvangasana'};let cur=map[starts[series]]||asanas.find(a=>!a.before||!map[exName(a.before)])||asanas[0];const sorted=[],visited=new Set();while(cur&&!visited.has(cur.name)){visited.add(cur.name);sorted.push(cur);cur=cur.after?map[exName(cur.after)]:null;}asanas.forEach(a=>{if(!visited.has(a.name))sorted.push(a);});return sorted;}
+function exName(text){if(!text)return null;const m=text.match(/\[\[(.*?)\]\]/);return m?m[1]:text.split(',')[0].trim();}
 document.getElementById('mala-filter-btn').addEventListener('click',()=>openModal('mala-filter-modal'));
-document.querySelectorAll('#mala-series-filters .series-filter').forEach(btn=>{
-  btn.addEventListener('click',function(){
-    document.querySelectorAll('#mala-series-filters .series-filter').forEach(b=>b.classList.remove('active'));
-    this.classList.add('active');
-    malaSeriesFilter=this.dataset.series;
-    displayAsanasList();
-    closeModal('mala-filter-modal');
-  });
-});
+document.querySelectorAll('#mala-series-filters .series-filter').forEach(btn=>{btn.addEventListener('click',function(){document.querySelectorAll('#mala-series-filters .series-filter').forEach(b=>b.classList.remove('active'));this.classList.add('active');malaSeriesFilter=this.dataset.series;displayAsanasList();closeModal('mala-filter-modal');});});
 
 /* ── ASANA MODAL ── */
 function showAsanaModal(asana){
   const pl=t=>t?t.replace(/\[\[(.*?)\]\]/g,'<span class="asana-link" data-asana="$1">$1</span>'):'';
-  const modal=document.createElement('div');
-  modal.className='modal asana-modal open';
-  modal.innerHTML=`<div class="modal-content">
-    <div class="modal-header"><h3>ĀSANA INFO</h3><button class="icon-btn close-modal"><i class="fa-solid fa-x"></i></button></div>
+  const modal=document.createElement('div');modal.className='modal asana-modal open';
+  modal.innerHTML=`<div class="modal-content"><div class="modal-header"><h3>ĀSANA INFO</h3><button class="icon-btn close-modal"><i class="fa-solid fa-x"></i></button></div>
     <div class="modal-body">
       <div class="practice-status" style="margin-bottom:4px;">${asana.sandhi||''}</div>
       <div style="font-style:italic;color:var(--bordo);font-size:.83rem;">${asana.devanagari||''}<br>${asana.english||''}</div>
@@ -1372,190 +1196,95 @@ function showAsanaModal(asana){
         ${asana.preparation?`<div class="asana-detail-row"><span class="asana-detail-label">Preparación: </span>${pl(asana.preparation)}</div>`:''}
         ${asana.counterposes?`<div class="asana-detail-row"><span class="asana-detail-label">Contraposturas: </span>${pl(asana.counterposes)}</div>`:''}
       </div>`:''}
-      <div class="asana-info-section"><div class="asana-info-title">NOTAS PERSONALES</div>
-        <div id="asana-notes-cnt" class="loading">Cargando...</div>
-      </div>
-    </div>
-  </div>`;
+      <div class="asana-info-section"><div class="asana-info-title">NOTAS PERSONALES</div><div id="asana-notes-cnt" class="loading">Cargando...</div></div>
+    </div></div>`;
   document.body.appendChild(modal);
   modal.querySelector('.close-modal').addEventListener('click',()=>modal.remove());
-  modal.addEventListener('click',e=>{if(e.target===modal) modal.remove();});
-  modal.querySelectorAll('.asana-link').forEach(l=>l.addEventListener('click',()=>{
-    const linked=asanasData.find(a=>a.sandhi===l.dataset.asana||a.name===l.dataset.asana);
-    if(linked){modal.remove();showAsanaModal(linked);}
-  }));
+  modal.addEventListener('click',e=>{if(e.target===modal)modal.remove();});
+  modal.querySelectorAll('.asana-link').forEach(l=>l.addEventListener('click',()=>{const linked=asanasData.find(a=>a.sandhi===l.dataset.asana||a.name===l.dataset.asana);if(linked){modal.remove();showAsanaModal(linked);}}));
   setTimeout(()=>displayAsanaNotes(asana,modal.querySelector('#asana-notes-cnt')),100);
 }
-
-/* ── ASANA NOTES ── */
 async function displayAsanaNotes(asana,cnt){
   cnt.innerHTML='<div class="loading">Cargando...</div>';
   const{data}=await supabaseClient.from('navanga_notes').select('*').eq('asana_id',asana.id).single().catch(()=>({data:null}));
   if(data){
     const d=new Date(data.updated_at).toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
     cnt.innerHTML=`<div class="note-content">${data.note}</div><div class="note-meta">Última edición: ${d}</div>
-      <div class="note-actions">
-        <button class="note-btn blue" data-id="${asana.id}">Editar</button>
-        <button class="note-btn red" data-id="${asana.id}">Eliminar</button>
-      </div>`;
-  } else {
-    cnt.innerHTML=`<textarea class="note-textarea" placeholder="Notas personales..."></textarea>
-      <div class="note-actions"><button class="note-btn" data-id="${asana.id}">Guardar</button></div>`;
+      <div class="note-actions">${isUnlocked?`<button class="note-btn blue" data-id="${asana.id}">Editar</button><button class="note-btn red" data-id="${asana.id}">Eliminar</button>`:''}</div>`;
+  }else{
+    cnt.innerHTML=isUnlocked?`<textarea class="note-textarea" placeholder="Notas personales..."></textarea>
+      <div class="note-actions"><button class="note-btn" data-id="${asana.id}">Guardar</button></div>`:'<div style="font-size:.78rem;color:#666;">Sin notas · Desbloqueá para agregar</div>';
   }
   cnt.addEventListener('click',async e=>{
-    const id=e.target.dataset.id; if(!id) return;
+    const id=e.target.dataset.id;if(!id)return;
     if(e.target.classList.contains('note-btn')&&!e.target.classList.contains('blue')&&!e.target.classList.contains('red')){
       const text=cnt.querySelector('.note-textarea').value;
-      await supabaseClient.from('navanga_notes').upsert([{asana_id:id,note:text,updated_at:new Date().toISOString()}]);
-      displayAsanaNotes(asana,cnt);
-    } else if(e.target.classList.contains('blue')){
+      await supabaseClient.from('navanga_notes').upsert([{asana_id:id,note:text,updated_at:new Date().toISOString()}]);displayAsanaNotes(asana,cnt);
+    }else if(e.target.classList.contains('blue')){
       const existing=cnt.querySelector('.note-content')?.textContent||'';
       cnt.innerHTML=`<textarea class="note-textarea">${existing}</textarea>
         <div class="note-actions"><button class="note-btn" data-id="${id}">Guardar</button><button class="note-btn red cancel-note">Cancelar</button></div>`;
       cnt.querySelector('.cancel-note').addEventListener('click',()=>displayAsanaNotes(asana,cnt));
-    } else if(e.target.classList.contains('red')&&!e.target.classList.contains('cancel-note')){
+    }else if(e.target.classList.contains('red')&&!e.target.classList.contains('cancel-note')){
       if(confirm('¿Eliminar nota?')){await supabaseClient.from('navanga_notes').delete().eq('asana_id',id);displayAsanaNotes(asana,cnt);}
     }
   });
 }
 
+/* ── KARAṆḌA ── */
+let linksData=[],linkFilterTheme=null,currentLinkEntry={};
+async function loadLinks(){
+  const container=document.getElementById('links-list');
+  try{const{data,error}=await supabaseClient.from('navanga_links').select('*').order('created_at',{ascending:false});if(error)throw error;linksData=data||[];displayLinks();updateLinkThemeChips();}
+  catch(e){container.innerHTML=`<div class="loading" style="color:var(--red);">Error: ${e.message}</div>`;}
+}
+function displayLinks(){
+  const container=document.getElementById('links-list');
+  const filtered=linkFilterTheme?linksData.filter(l=>l.theme&&l.theme.toLowerCase()===linkFilterTheme.toLowerCase()):linksData;
+  if(!filtered.length){container.innerHTML='<div class="loading">Sin links guardados</div>';return;}
+  container.innerHTML=filtered.map(l=>`<div class="link-card" data-id="${l.id}">
+    <div class="link-card-info"><div class="link-card-name">${l.name||'Sin nombre'}</div>${l.theme?`<div class="link-card-theme"><i class="fa-solid fa-tag"></i> ${l.theme}</div>`:''}</div>
+    <div class="link-card-actions">
+      <a class="link-open-btn" href="${l.url}" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+      ${isUnlocked?`<button class="icon-btn edit-link-btn" data-id="${l.id}"><i class="fa-solid fa-pen"></i></button>
+      <button class="icon-btn delete-link-btn" data-id="${l.id}" style="background:var(--red);"><i class="fa-solid fa-trash"></i></button>`:''}
+    </div></div>`).join('');
+  container.querySelectorAll('.delete-link-btn').forEach(btn=>btn.addEventListener('click',async()=>{if(!confirm('¿Eliminar este link?'))return;await supabaseClient.from('navanga_links').delete().eq('id',btn.dataset.id);linksData=linksData.filter(l=>l.id.toString()!==btn.dataset.id);displayLinks();updateLinkThemeChips();updateLinkFilterDot();}));
+  container.querySelectorAll('.edit-link-btn').forEach(btn=>btn.addEventListener('click',()=>{const link=linksData.find(l=>l.id.toString()===btn.dataset.id);if(link)showLinkModal(link);}));
+}
+function getAllThemes(){return[...new Set(linksData.map(l=>l.theme).filter(Boolean))].sort();}
+function updateLinkThemeChips(query=''){
+  const themes=getAllThemes().filter(t=>!query||t.toLowerCase().includes(query));
+  const container=document.getElementById('link-theme-chips');if(!container)return;
+  container.innerHTML=themes.map(t=>{const sel=linkFilterTheme===t;return`<span class="tag" data-theme="${t}" style="cursor:pointer!important;opacity:${sel?1:.6};background:var(--blue);">${t}</span>`;}).join('');
+  container.querySelectorAll('.tag').forEach(el=>el.addEventListener('click',()=>{linkFilterTheme=linkFilterTheme===el.dataset.theme?null:el.dataset.theme;updateLinkThemeChips(query);}));
+}
+function updateLinkFilterDot(){const btn=document.getElementById('link-filter-btn');const ex=btn.querySelector('.filters-dot');if(linkFilterTheme&&!ex){const d=document.createElement('div');d.className='filters-dot';btn.appendChild(d);}else if(!linkFilterTheme&&ex)ex.remove();}
+function showLinkModal(link=null){currentLinkEntry=link||{};document.getElementById('link-modal-title').textContent=link?'EDITAR LINK':'NUEVO LINK';document.getElementById('link-name').value=link?.name||'';document.getElementById('link-url').value=link?.url||'';document.getElementById('link-theme').value=link?.theme||'';openModal('link-modal');}
+document.getElementById('new-link-btn').addEventListener('click',()=>showLinkModal());
+document.getElementById('save-link-btn').addEventListener('click',async()=>{
+  const name=document.getElementById('link-name').value.trim(),url=document.getElementById('link-url').value.trim(),theme=document.getElementById('link-theme').value.trim();
+  if(!name||!url){alert('Nombre y link son obligatorios');return;}
+  const payload={name,url,theme:theme||null};if(currentLinkEntry.id)payload.id=currentLinkEntry.id;
+  try{const{error}=await supabaseClient.from('navanga_links').upsert([payload]);if(error)throw error;await loadLinks();closeModal('link-modal');}catch(e){alert('Error: '+e.message);}
+});
+document.getElementById('link-filter-btn').addEventListener('click',()=>{updateLinkThemeChips();openModal('link-filter-modal');});
+document.getElementById('link-filter-input').addEventListener('input',function(){updateLinkThemeChips(this.value.toLowerCase());});
+document.getElementById('apply-link-filter').addEventListener('click',()=>{displayLinks();updateLinkFilterDot();closeModal('link-filter-modal');});
+document.getElementById('clear-link-filter').addEventListener('click',()=>{linkFilterTheme=null;document.getElementById('link-filter-input').value='';updateLinkThemeChips();displayLinks();updateLinkFilterDot();closeModal('link-filter-modal');});
+
 /* ── LOAD CSV ── */
 async function loadAsanasFromCSV(){
-  try{
-    const r=await fetch('asana.csv'),txt=await r.text();
-    const{data}=Papa.parse(txt,{header:true,skipEmptyLines:true});
-    asanasData=data.map(row=>({
-      id:row.Name.toLowerCase().replace(/[^a-z0-9]/g,'_'),
-      name:row.Name,sanskrit:row.Sandhi||row.Devanagari||'',
-      english:row.English,devanagari:row.Devanagari,sandhi:row.Sandhi,
-      etymology:row.Etymology,yogaSeries:row.YogaSeries,
-      before:row.Before,after:row.After,open:row.Open,
-      stable:row.Stable,preparation:row.Preparation,counterposes:row.Counterposes,
-    }));
+  try{const r=await fetch('asana.csv'),txt=await r.text();const{data}=Papa.parse(txt,{header:true,skipEmptyLines:true});
+    asanasData=data.map(row=>({id:row.Name.toLowerCase().replace(/[^a-z0-9]/g,'_'),name:row.Name,sanskrit:row.Sandhi||row.Devanagari||'',english:row.English,devanagari:row.Devanagari,sandhi:row.Sandhi,etymology:row.Etymology,yogaSeries:row.YogaSeries,before:row.Before,after:row.After,open:row.Open,stable:row.Stable,preparation:row.Preparation,counterposes:row.Counterposes}));
   }catch(e){console.warn('CSV load failed:',e);asanasData=[];}
 }
 
-/* ── KARAṆḌA (links) ── */
-let linksData=[], linkFilterTheme=null, currentLinkEntry={};
-
-async function loadLinks(){
-  const container=document.getElementById('links-list');
-  try{
-    const{data,error}=await supabaseClient.from('navanga_links').select('*').order('created_at',{ascending:false});
-    if(error) throw error;
-    linksData=data||[];
-    displayLinks();
-    updateLinkThemeChips();
-  }catch(e){
-    container.innerHTML=`<div class="loading" style="color:var(--red);">Error cargando links: ${e.message}</div>`;
-  }
-}
-
-function displayLinks(){
-  const container=document.getElementById('links-list');
-  let filtered=linkFilterTheme
-    ?linksData.filter(l=>l.theme&&l.theme.toLowerCase()===linkFilterTheme.toLowerCase())
-    :linksData;
-  if(!filtered.length){
-    container.innerHTML='<div class="loading">Sin links guardados</div>';
-    return;
-  }
-  container.innerHTML=filtered.map(l=>`
-    <div class="link-card" data-id="${l.id}">
-      <div class="link-card-info">
-        <div class="link-card-name">${l.name||'Sin nombre'}</div>
-        ${l.theme?`<div class="link-card-theme"><i class="fa-solid fa-tag"></i> ${l.theme}</div>`:''}
-      </div>
-      <div class="link-card-actions">
-        <a class="link-open-btn" href="${l.url}" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir</a>
-        <button class="icon-btn edit-link-btn" data-id="${l.id}" title="Editar"><i class="fa-solid fa-pen"></i></button>
-        <button class="icon-btn delete-link-btn" data-id="${l.id}" title="Eliminar" style="background:var(--red);"><i class="fa-solid fa-trash"></i></button>
-      </div>
-    </div>`).join('');
-  container.querySelectorAll('.delete-link-btn').forEach(btn=>btn.addEventListener('click',async()=>{
-    if(!confirm('¿Eliminar este link?')) return;
-    await supabaseClient.from('navanga_links').delete().eq('id',btn.dataset.id);
-    linksData=linksData.filter(l=>l.id.toString()!==btn.dataset.id);
-    displayLinks(); updateLinkThemeChips(); updateLinkFilterDot();
-  }));
-  container.querySelectorAll('.edit-link-btn').forEach(btn=>btn.addEventListener('click',()=>{
-    const link=linksData.find(l=>l.id.toString()===btn.dataset.id);
-    if(link) showLinkModal(link);
-  }));
-}
-
-function getAllThemes(){
-  return [...new Set(linksData.map(l=>l.theme).filter(Boolean))].sort();
-}
-
-function updateLinkThemeChips(query=''){
-  const themes=getAllThemes().filter(t=>!query||t.toLowerCase().includes(query));
-  const container=document.getElementById('link-theme-chips');
-  if(!container) return;
-  container.innerHTML=themes.map(t=>{
-    const sel=linkFilterTheme===t;
-    return `<span class="tag" data-theme="${t}" style="cursor:pointer!important;opacity:${sel?1:.6};background:var(--blue);">${t}</span>`;
-  }).join('');
-  container.querySelectorAll('.tag').forEach(el=>el.addEventListener('click',()=>{
-    linkFilterTheme=linkFilterTheme===el.dataset.theme?null:el.dataset.theme;
-    updateLinkThemeChips(query);
-  }));
-}
-
-function updateLinkFilterDot(){
-  const btn=document.getElementById('link-filter-btn');
-  const existing=btn.querySelector('.filters-dot');
-  if(linkFilterTheme&&!existing){const d=document.createElement('div');d.className='filters-dot';btn.appendChild(d);}
-  else if(!linkFilterTheme&&existing) existing.remove();
-}
-
-function showLinkModal(link=null){
-  currentLinkEntry=link||{};
-  document.getElementById('link-modal-title').textContent=link?'EDITAR LINK':'NUEVO LINK';
-  document.getElementById('link-name').value=link?.name||'';
-  document.getElementById('link-url').value=link?.url||'';
-  document.getElementById('link-theme').value=link?.theme||'';
-  openModal('link-modal');
-}
-
-document.getElementById('new-link-btn').addEventListener('click',()=>showLinkModal());
-document.getElementById('save-link-btn').addEventListener('click',async()=>{
-  const name=document.getElementById('link-name').value.trim();
-  const url=document.getElementById('link-url').value.trim();
-  const theme=document.getElementById('link-theme').value.trim();
-  if(!name||!url){alert('Nombre y link son obligatorios');return;}
-  const payload={name,url,theme:theme||null};
-  if(currentLinkEntry.id) payload.id=currentLinkEntry.id;
-  try{
-    const{error}=await supabaseClient.from('navanga_links').upsert([payload]);
-    if(error) throw error;
-    await loadLinks();
-    closeModal('link-modal');
-  }catch(e){alert('Error: '+e.message);}
-});
-
-document.getElementById('link-filter-btn').addEventListener('click',()=>{
-  updateLinkThemeChips();
-  openModal('link-filter-modal');
-});
-document.getElementById('link-filter-input').addEventListener('input',function(){
-  updateLinkThemeChips(this.value.toLowerCase());
-});
-document.getElementById('apply-link-filter').addEventListener('click',()=>{
-  displayLinks(); updateLinkFilterDot(); closeModal('link-filter-modal');
-});
-document.getElementById('clear-link-filter').addEventListener('click',()=>{
-  linkFilterTheme=null;
-  document.getElementById('link-filter-input').value='';
-  updateLinkThemeChips(); displayLinks(); updateLinkFilterDot(); closeModal('link-filter-modal');
-});
-
 /* ── INIT ── */
 document.addEventListener('DOMContentLoaded',async()=>{
-  initMoodBoard();
-  setupTagSearch();
-  setupPeriodBtns();
+  applyLockState();
   setupHFilterModal();
+  setupTagSearch();
   await loadAsanasFromCSV();
   setupAsanaSearch();
   displayAsanasList();
