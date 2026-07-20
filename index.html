@@ -1546,7 +1546,11 @@ function showAsanaModal(asana){
 /* ── ASANA NOTES ── */
 async function displayAsanaNotes(asana,cnt){
   cnt.innerHTML='<div class="loading">Cargando...</div>';
-  const{data}=await supabaseClient.from('navanga_notes').select('*').eq('asana_id',asana.id).single().catch(()=>({data:null}));
+  let data=null;
+  try{
+    const res=await supabaseClient.from('navanga_notes').select('*').eq('asana_id',asana.id).single();
+    data=res.data;
+  }catch(e){data=null;}
   if(data){
     const d=new Date(data.updated_at).toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
     cnt.innerHTML=`<div class="note-content">${data.note}</div><div class="note-meta">Última edición: ${d}</div>
