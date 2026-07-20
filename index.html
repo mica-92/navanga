@@ -26,7 +26,7 @@
 *,*::before,*::after{cursor:default!important;user-select:none!important;-webkit-user-select:none!important;}
 button,a,[role="button"],.mood-item,.asana-item,.period-btn,.series-filter,
 .icon-btn,.show-answer-btn,.correct-btn,.incorrect-btn,.filter-mood-item,
-.tag,.asana-tag,.asana-link,.go-btn{cursor:pointer!important;}
+.tag,.asana-tag,.asana-link,.go-btn,.cyclic-btn{cursor:pointer!important;}
 input,textarea,select{cursor:text!important;user-select:text!important;-webkit-user-select:text!important;font-size:16px!important;}
 img{pointer-events:none;-webkit-user-drag:none;}
 
@@ -40,6 +40,8 @@ header{
 .header-inner{display:flex;align-items:center;gap:10px;width:100%;max-width:640px;}
 .line{flex:1;height:2px;background:#333;}
 .site-title{font-size:2rem;color:#333;text-transform:uppercase;white-space:nowrap;}
+#lock-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:var(--green6);}
+#lock-btn.unlocked-state{background:var(--bordo);}
 
 /* ── FOOTER (credit only) ── */
 footer{
@@ -53,6 +55,10 @@ footer{
   main{padding-left:10px;padding-right:10px;}
   .footer-credit{font-size:.58rem;text-align:right;}
 }
+
+/* ── EDIT-ONLY (PIN gated) ── */
+.edit-only{display:none!important;}
+body.unlocked .edit-only{display:revert!important;}
 
 /* ── BURGER FLOATING MENU ── */
 .floating-menu{position:fixed;bottom:6px;left:12px;z-index:1000;}
@@ -165,13 +171,13 @@ main{
 
 /* ── STATS ── */
 .stats-summary{
-  font-size:.85rem;color:var(--bordo);border:1px solid var(--bordo);
+  font-size:.8rem;color:var(--bordo);border:1px solid var(--bordo);
   background:rgba(188,71,73,.08);padding:6px 10px;
   border-radius:4px;margin-bottom:12px;text-align:center;
 }
 .charts-wrap{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
 .chart-title{
-  font-size:.75rem;font-weight:bold;color:var(--bordo);
+  font-size:.72rem;font-weight:bold;color:var(--bordo);
   background:rgba(188,71,73,.12);border:1px solid var(--bordo);
   padding:3px 8px;border-radius:3px;margin-bottom:6px;text-align:center;
 }
@@ -184,7 +190,8 @@ main{
   position:relative;min-height:4px;transition:background .2s;max-height:58px;
 }
 .chart-bar:hover{background:var(--yellow);}
-.chart-value{position:absolute;top:-15px;left:0;right:0;text-align:center;font-size:.55rem;font-weight:bold;}
+.chart-value{position:absolute;top:-15px;left:0;right:0;text-align:center;font-size:.55rem;font-weight:bold;opacity:0;transition:opacity .15s;}
+.chart-bar:hover .chart-value{opacity:1;}
 .chart-label{position:absolute;bottom:-20px;left:0;right:0;text-align:center;font-size:.55rem;}
 .chart-mood-circle{width:15px;height:15px;border-radius:50%;border:1px solid #333;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:.5rem;}
 
@@ -198,12 +205,10 @@ main{
 .entry-actions{display:flex;gap:5px;}
 .mood-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;}
 .practice-dot{
-  width:28px;height:28px;border-radius:50%;border:var(--b2);
+  min-width:28px;height:28px;padding:0 6px;border-radius:14px;border:var(--b2);
   display:flex;align-items:center;justify-content:center;
-  color:#fff;font-weight:bold;font-size:.65rem;flex-shrink:0;
+  color:#fff;font-weight:bold;font-size:.62rem;flex-shrink:0;
 }
-.practice-dot.yes{background:var(--green6);}
-.practice-dot.no{background:var(--red);}
 .mood-chip{
   width:26px;height:26px;border-radius:50%;border:2px solid #333;
   display:flex;align-items:center;justify-content:center;
@@ -303,20 +308,13 @@ main{
 /* ── LOG FORM ── */
 .log-form{padding:12px 14px;}
 .field-label{display:block;font-weight:bold;font-size:.78rem;color:var(--green6);margin:10px 0 4px;}
-.mood-section{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid #33333340;margin-bottom:8px;}
-.practice-toggle{
-  width:30px;height:30px;border-radius:50%;border:var(--b2);
-  display:flex;align-items:center;justify-content:center;
-  color:#fff;font-weight:bold;font-size:.65rem;flex-shrink:0;background:var(--red);
+.cyclic-row{padding:6px 0;border-bottom:1px solid #33333340;margin-bottom:6px;}
+.cyclic-btn{
+  padding:8px 16px;border:var(--b2);border-radius:20px;color:#fff;
+  font-weight:bold;font-size:.82rem;display:inline-flex;align-items:center;gap:7px;
+  transition:transform .15s;min-width:110px;justify-content:center;
 }
-.practice-toggle.yes{background:var(--green6);}
-.mood-board{display:flex;flex-wrap:wrap;}
-.mood-item{
-  width:28px;height:28px;border-radius:50%;border:var(--b2);
-  display:flex;align-items:center;justify-content:center;
-  margin:2px;font-size:.75rem;transition:transform .15s;
-}
-.mood-item.selected{transform:scale(1.15);filter:hue-rotate(90deg);}
+.cyclic-btn:active{transform:scale(.95);}
 .text-input,.textarea-input,.date-input-field{
   width:100%;padding:7px 10px;border:var(--b2);
   background:var(--yellow);color:var(--green6);
@@ -350,7 +348,8 @@ main{
 .search-result:hover{background:rgba(188,71,73,.2);}
 
 /* ── FILTER MODALS ── */
-.filter-section{margin-bottom:12px;}
+.filter-section{margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #33333330;}
+.filter-section:last-of-type{border-bottom:none;}
 .filter-mood-board{display:flex;flex-wrap:wrap;margin-top:6px;}
 .filter-mood-item{
   width:34px;height:34px;border-radius:50%;border:var(--b2);
@@ -362,6 +361,9 @@ main{
   position:absolute;top:-3px;right:-3px;width:9px;height:9px;
   background:var(--bordo);border-radius:50%;border:2px solid var(--yellow);
 }
+.custom-date-wrap{display:none;margin-top:8px;}
+.date-row{display:flex;gap:8px;}
+.date-row > div{flex:1;}
 
 /* ── ASANA MODAL ── */
 .asana-modal .modal-content{max-width:480px;}
@@ -405,9 +407,6 @@ main{
 
 /* ── MISC ── */
 .loading{text-align:center;color:#666;font-style:italic;padding:16px;font-size:.83rem;}
-.custom-date-wrap{display:none;margin-top:8px;}
-.date-row{display:flex;gap:8px;}
-.date-row > div{flex:1;}
 .section-divider{border:none;border-top:2px solid var(--bordo);margin:16px 0;}
 
 /* ── MOBILE ── */
@@ -426,6 +425,7 @@ main{
     <div class="site-title">Navāṅga</div>
     <div class="line"></div>
   </div>
+  <button class="icon-btn" id="lock-btn" title="Desbloquear edición"><i class="fa-solid fa-lock" id="lock-icon"></i></button>
 </header>
 
 <!-- MAIN -->
@@ -437,7 +437,7 @@ main{
       <span class="topbar-title">Bitácora de Hoy</span>
       <div class="topbar-actions">
         <button class="icon-btn" id="moon-btn" title="Lunas"><i class="fa-solid fa-moon"></i></button>
-        <button class="icon-btn" id="new-log-btn" title="Nueva entrada"><i class="fa-solid fa-plus"></i></button>
+        <button class="icon-btn edit-only" id="new-log-btn" title="Nueva entrada"><i class="fa-solid fa-plus"></i></button>
       </div>
     </div>
     <div id="today-content"><div class="loading">Cargando...</div></div>
@@ -448,31 +448,20 @@ main{
     <div class="topbar">
       <span class="topbar-title">Itihāsa</span>
       <div class="topbar-actions">
+        <button class="icon-btn edit-only" id="settings-btn" title="Configurar meta"><i class="fa-solid fa-gear"></i></button>
         <button class="icon-btn" style="position:relative;" id="history-filter-btn" title="Filtrar"><i class="fa-solid fa-filter"></i></button>
-        <button class="icon-btn" id="new-log-btn2" title="Nueva entrada"><i class="fa-solid fa-plus"></i></button>
+        <button class="icon-btn edit-only" id="new-log-btn2" title="Nueva entrada"><i class="fa-solid fa-plus"></i></button>
       </div>
-    </div>
-
-    <!-- Periodo (afecta stats Y historial) -->
-    <div class="period-pills" id="period-pills">
-      <button class="period-btn" data-period="week">SEMANA</button>
-      <button class="period-btn active" data-period="month">MES</button>
-      <button class="period-btn" data-period="year">AÑO</button>
-      <button class="period-btn" data-period="custom">CUSTOM</button>
-    </div>
-    <div class="custom-date-wrap" id="custom-date-wrap">
-      <div class="date-row">
-        <div><label class="field-label">DESDE:</label><input type="date" class="date-input-field" id="custom-from"></div>
-        <div><label class="field-label">HASTA:</label><input type="date" class="date-input-field" id="custom-to"></div>
-      </div>
-      <button class="go-btn" id="apply-custom" style="margin-top:8px;width:100%;">APLICAR</button>
     </div>
 
     <!-- Stats summary + charts -->
     <div class="stats-summary" id="stats-summary"></div>
     <div class="charts-wrap">
-      <div><div class="chart-title">MOODS</div><div class="stats-chart" id="mood-chart"></div></div>
-      <div><div class="chart-title">PRÁCTICA</div><div class="stats-chart" id="practice-chart"></div></div>
+      <div style="display:flex;gap:10px;">
+        <div style="flex:1;min-width:0;"><div class="chart-title">MOODS</div><div class="stats-chart" id="mood-chart"></div></div>
+        <div style="flex:1;min-width:0;"><div class="chart-title">COMPLETITUD</div><div class="stats-chart" id="completion-chart"></div></div>
+      </div>
+      <div><div class="chart-title">ESTILOS</div><div class="stats-chart" id="style-chart"></div></div>
     </div>
 
     <hr class="section-divider">
@@ -522,7 +511,7 @@ main{
       <span class="topbar-title">Karaṇḍa</span>
       <div class="topbar-actions">
         <button class="icon-btn" style="position:relative;" id="link-filter-btn" title="Filtrar"><i class="fa-solid fa-filter"></i></button>
-        <button class="icon-btn" id="new-link-btn" title="Nuevo link"><i class="fa-solid fa-plus"></i></button>
+        <button class="icon-btn edit-only" id="new-link-btn" title="Nuevo link"><i class="fa-solid fa-plus"></i></button>
       </div>
     </div>
     <div id="links-list"><div class="loading">Cargando...</div></div>
@@ -560,6 +549,32 @@ main{
 
 <!-- ═══ MODALS ═══ -->
 
+<!-- PIN -->
+<div class="modal" id="pin-modal">
+  <div class="modal-content" style="max-width:280px;">
+    <div class="modal-header"><h3>MODO EDICIÓN</h3><button class="icon-btn close-modal"><i class="fa-solid fa-x"></i></button></div>
+    <div class="modal-body">
+      <label class="field-label">PIN</label>
+      <input type="password" class="text-input" id="pin-input" inputmode="numeric" maxlength="4" placeholder="****">
+      <button class="go-btn" id="pin-submit" style="width:100%;margin-top:10px;">DESBLOQUEAR</button>
+      <div id="pin-error" style="color:var(--red);font-size:.75rem;margin-top:6px;display:none;">PIN incorrecto</div>
+    </div>
+  </div>
+</div>
+
+<!-- Settings (weekly goal) -->
+<div class="modal" id="settings-modal">
+  <div class="modal-content" style="max-width:320px;">
+    <div class="modal-header"><h3>META SEMANAL</h3><button class="icon-btn close-modal"><i class="fa-solid fa-x"></i></button></div>
+    <div class="modal-body">
+      <label class="field-label">DÍAS DE PRÁCTICA POR SEMANA</label>
+      <input type="number" class="text-input" id="goal-input" min="1" max="7" step="1">
+      <button class="go-btn" id="save-goal-btn" style="width:100%;margin-top:10px;">GUARDAR</button>
+      <div style="font-size:.65rem;color:#666;margin-top:8px;">Cuentan como práctica: SÍ, SP y MOON.</div>
+    </div>
+  </div>
+</div>
+
 <!-- Moon -->
 <div class="modal" id="moon-modal">
   <div class="modal-content">
@@ -576,25 +591,44 @@ main{
   </div>
 </div>
 
-<!-- History filter -->
+<!-- History filter (incluye período) -->
 <div class="modal" id="hfilter-modal">
   <div class="modal-content">
     <div class="modal-header"><h3>FILTRAR HISTORIAL</h3><button class="icon-btn close-modal"><i class="fa-solid fa-x"></i></button></div>
     <div class="modal-body">
+      <div class="filter-section">
+        <div class="field-label">PERÍODO</div>
+        <div class="period-pills" id="period-pills">
+          <button class="period-btn" data-period="week">SEMANA</button>
+          <button class="period-btn active" data-period="month">MES</button>
+          <button class="period-btn" data-period="year">AÑO</button>
+          <button class="period-btn" data-period="custom">CUSTOM</button>
+        </div>
+        <div class="custom-date-wrap" id="custom-date-wrap">
+          <div class="date-row">
+            <div><label class="field-label">DESDE:</label><input type="date" class="date-input-field" id="custom-from"></div>
+            <div><label class="field-label">HASTA:</label><input type="date" class="date-input-field" id="custom-to"></div>
+          </div>
+        </div>
+      </div>
       <div class="filter-section">
         <div class="field-label">ETIQUETAS</div>
         <input type="text" class="text-input" id="filter-tag-input" placeholder="Buscar etiquetas...">
         <div class="chips" id="filter-tags-list" style="margin-top:6px;"></div>
       </div>
       <div class="filter-section">
-        <div class="field-label">MOODS</div>
+        <div class="field-label">MOOD / COMPLETITUD / ESTILO</div>
         <div class="filter-mood-board" id="filter-mood-board"></div>
       </div>
       <div class="filter-section">
         <div class="field-label">PRÁCTICA</div>
-        <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
-          <div class="practice-dot no" id="filter-practice-toggle" style="cursor:pointer!important;">NO</div>
-          <span style="font-size:.82rem;">Práctica realizada</span>
+        <div class="period-pills" id="practice-state-filter">
+          <button class="period-btn active" data-pstate="all">TODOS</button>
+          <button class="period-btn" data-pstate="si">SÍ</button>
+          <button class="period-btn" data-pstate="no">NO</button>
+          <button class="period-btn" data-pstate="sp">SP</button>
+          <button class="period-btn" data-pstate="moon">MOON</button>
+          <button class="period-btn" data-pstate="quote">QUOTE</button>
         </div>
       </div>
       <div style="display:flex;gap:8px;margin-top:12px;">
@@ -692,11 +726,18 @@ main{
       </div>
     </div>
     <div class="log-form">
-      <div class="field-label">MOOD & PRÁCTICA</div>
-      <div class="mood-section">
-        <div class="practice-toggle" id="practice-button">NO</div>
-        <div class="mood-board" id="mood-board"></div>
-      </div>
+      <div class="field-label">PRÁCTICA</div>
+      <div class="cyclic-row"><div class="cyclic-btn" id="practice-state-btn"></div></div>
+
+      <div class="field-label">MOOD</div>
+      <div class="cyclic-row"><div class="cyclic-btn" id="mood-state-btn"></div></div>
+
+      <div class="field-label">COMPLETITUD</div>
+      <div class="cyclic-row"><div class="cyclic-btn" id="completion-state-btn"></div></div>
+
+      <div class="field-label">ESTILO</div>
+      <div class="cyclic-row"><div class="cyclic-btn" id="style-state-btn"></div></div>
+
       <label class="field-label" for="practice-date">FECHA</label>
       <input type="date" class="date-input-field" id="practice-date">
       <label class="field-label">NOTAS</label>
@@ -728,7 +769,31 @@ const SUPABASE_URL  = 'https://fljzhgfmgswqxhatezhn.supabase.co';
 const SUPABASE_ANON = 'sb_publishable_mPSg2RcST_3rw3wYrfO-5A_Uta3Nj12';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-/* ── MOOD OPTIONS ── */
+/* ── PIN / EDIT LOCK ── */
+const PIN_CODE='2302';
+let isUnlocked=false;
+function updateLockUI(){
+  document.body.classList.toggle('unlocked',isUnlocked);
+  document.getElementById('lock-icon').className=isUnlocked?'fa-solid fa-lock-open':'fa-solid fa-lock';
+  document.getElementById('lock-btn').classList.toggle('unlocked-state',isUnlocked);
+  document.getElementById('lock-btn').title=isUnlocked?'Bloquear edición':'Desbloquear edición';
+}
+document.getElementById('lock-btn').addEventListener('click',()=>{
+  if(isUnlocked){isUnlocked=false;updateLockUI();return;}
+  document.getElementById('pin-input').value='';
+  document.getElementById('pin-error').style.display='none';
+  openModal('pin-modal');
+  setTimeout(()=>document.getElementById('pin-input').focus(),150);
+});
+function checkPin(){
+  const v=document.getElementById('pin-input').value;
+  if(v===PIN_CODE){isUnlocked=true;updateLockUI();closeModal('pin-modal');}
+  else{document.getElementById('pin-error').style.display='block';}
+}
+document.getElementById('pin-submit').addEventListener('click',checkPin);
+document.getElementById('pin-input').addEventListener('keydown',e=>{if(e.key==='Enter') checkPin();});
+
+/* ── MOOD OPTIONS (se mantienen para compatibilidad con datos guardados) ── */
 const MOODS = [
   {name:'special practice',label:'Special Practice',emoji:'<i class="fa-solid" style="color:#fff;font-style:normal;font-size:.6rem;">SP</i>',color:'var(--blue)'},
   {name:'feliz',label:'YeaYy!!',emoji:'<i class="fa-solid fa-face-laugh-beam"></i>',color:'#2a9d8f'},
@@ -741,22 +806,112 @@ const MOODS = [
   {name:'otro estilo',label:'Vinyasa',emoji:'<i class="fa-solid fa-fire"></i>',color:'#a26769'},
   {name:'yin',label:'Yin',emoji:'<i class="fa-solid fa-yin-yang"></i>',color:'rgb(233,196,190)'},
   {name:'fitness',label:'Drills',emoji:'<i class="fa-solid fa-dumbbell"></i>',color:'#95E1D3'},
-  {name:'moon day',label:'Moon Day',emoji:'<i class="fa-solid fa-moon"></i>',color:'#ced4da'},
+  {name:'moon day',label:'Moon Day',emoji:'<i class="fa-solid fa-moon"></i>',color:'#adb5bd'},
   {name:'quote',label:'Quote',emoji:'<i class="fa-solid fa-quote-right"></i>',color:'#6d597a'},
 ];
 const MOOD_CATS = {
-  moods:['feliz','enojado','neutral','moon day'],
-  practice:['complete','inconclusa','primera','segunda','otro estilo','yin']
+  moods:['feliz','enojado','neutral'],
+  completion:['complete','inconclusa'],
+  styles:['primera','segunda','otro estilo','yin','fitness']
 };
+const PSTATE_INFO = {
+  si:{label:'SÍ',color:'var(--green6)'},
+  no:{label:'NO',color:'var(--red)'},
+  sp:{label:'SP',color:'var(--blue)'},
+  moon:{label:'MOON',color:'#adb5bd'},
+  quote:{label:'QUOTE',color:'#6d597a'}
+};
+
+/* ── CYCLIC BUTTON STATE DEFS (log form) ── */
+const PRACTICE_STATES=[
+  {v:'si',label:'SÍ',color:'var(--green6)',emoji:''},
+  {v:'no',label:'NO',color:'var(--red)',emoji:''},
+  {v:'sp',label:'SP',color:'var(--blue)',emoji:''},
+  {v:'moon',label:'MOON',color:'#adb5bd',emoji:'<i class="fa-solid fa-moon"></i>'},
+  {v:'quote',label:'QUOTE',color:'#6d597a',emoji:'<i class="fa-solid fa-quote-right"></i>'},
+];
+const MOOD_STATES=[
+  {v:'',label:'—',color:'#999'},
+  {v:'feliz',label:'YeaYy!!',color:'#2a9d8f',emoji:'<i class="fa-solid fa-face-laugh-beam"></i>'},
+  {v:'enojado',label:'Ehhh...',color:'#e9c46a',emoji:'<i class="fa-solid fa-face-meh"></i>'},
+  {v:'neutral',label:'Neutral',color:'#bc4749',emoji:'<i class="fa-solid fa-face-tired"></i>'},
+];
+const COMPLETION_STATES=[
+  {v:'',label:'—',color:'#999'},
+  {v:'complete',label:'Completa',color:'#81b29a',emoji:'<i class="fa-solid fa-check"></i>'},
+  {v:'inconclusa',label:'Incompleta',color:'#bc6c25',emoji:'<i class="fa-solid fa-xmark"></i>'},
+];
+const STYLE_STATES=[
+  {v:'',label:'—',color:'#999'},
+  {v:'primera',label:'Primera',color:'#da627d',emoji:'<i class="fa-solid fa-1"></i>'},
+  {v:'segunda',label:'Segunda',color:'#ffa5ab',emoji:'<i class="fa-solid fa-2"></i>'},
+  {v:'otro estilo',label:'Vinyasa',color:'#a26769',emoji:'<i class="fa-solid fa-fire"></i>'},
+  {v:'yin',label:'Yin',color:'rgb(233,196,190)',emoji:'<i class="fa-solid fa-yin-yang"></i>'},
+  {v:'fitness',label:'Drills',color:'#95E1D3',emoji:'<i class="fa-solid fa-dumbbell"></i>'},
+];
+let practiceCtrl,moodCtrl,completionCtrl,styleCtrl;
+function renderCyclicBtn(el,states,idx){
+  const s=states[idx];
+  el.style.background=s.color;
+  el.innerHTML=`${s.emoji||''}<span>${s.label}</span>`;
+}
+function setupCyclicBtn(elId,states,initialIdx){
+  const el=document.getElementById(elId);
+  let idx=initialIdx;
+  renderCyclicBtn(el,states,idx);
+  el.addEventListener('click',()=>{
+    idx=(idx+1)%states.length;
+    renderCyclicBtn(el,states,idx);
+  });
+  return {
+    get:()=>states[idx].v,
+    set:(v)=>{const ni=states.findIndex(s=>s.v===v);idx=ni===-1?0:ni;renderCyclicBtn(el,states,idx);}
+  };
+}
+function initCyclicButtons(){
+  practiceCtrl=setupCyclicBtn('practice-state-btn',PRACTICE_STATES,1); // default 'no'
+  moodCtrl=setupCyclicBtn('mood-state-btn',MOOD_STATES,0);
+  completionCtrl=setupCyclicBtn('completion-state-btn',COMPLETION_STATES,0);
+  styleCtrl=setupCyclicBtn('style-state-btn',STYLE_STATES,0);
+}
+
+/* ── PRACTICE STATE HELPERS (derivadas de practiced + moods, sin cambiar schema) ── */
+function getPState(e){
+  const moods=e.moods||[];
+  if(moods.some(m=>m.name==='quote')) return 'quote';
+  if(moods.some(m=>m.name==='moon day')) return 'moon';
+  if(moods.some(m=>m.name==='special practice')) return 'sp';
+  return e.practiced?'si':'no';
+}
+function countsAsPractice(e){
+  const st=getPState(e);
+  return st==='si'||st==='sp'||st==='moon';
+}
+function buildMoodsArray(){
+  const arr=[];
+  const pv=practiceCtrl.get();
+  if(pv==='sp') arr.push(MOODS.find(m=>m.name==='special practice'));
+  if(pv==='moon') arr.push(MOODS.find(m=>m.name==='moon day'));
+  if(pv==='quote') arr.push(MOODS.find(m=>m.name==='quote'));
+  const mv=moodCtrl.get(); if(mv) arr.push(MOODS.find(m=>m.name===mv));
+  const cv=completionCtrl.get(); if(cv) arr.push(MOODS.find(m=>m.name===cv));
+  const sv=styleCtrl.get(); if(sv) arr.push(MOODS.find(m=>m.name===sv));
+  return arr;
+}
+function getPracticedBool(){
+  const pv=practiceCtrl.get();
+  return pv==='si'||pv==='sp';
+}
 
 /* ── STATE ── */
 let logHistory=[], asanasData=[], moonPhases=[];
-let selectedMoods=[], currentTags=[], currentAsanas=[], currentLogEntry={};
+let currentTags=[], currentAsanas=[], currentLogEntry={};
 let currentPeriod='month', customRange=null;
 let studyStats={totalAnswers:0,correctAnswers:0,uniqueAsanas:0};
 let currentPracticeAsana=null;
 let clinicSeriesFilter='all', malaSeriesFilter='all';
-let hFilters={tags:[],moods:[],practiced:null};
+let hFilters={tags:[],moods:[],pstate:'all'};
+let weeklyGoal=6;
 
 /* ── PAGE NAV ── */
 function showPage(id){
@@ -784,6 +939,28 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
   if(e.target===m) m.classList.remove('open');
 }));
 
+/* ── SETTINGS (WEEKLY GOAL) ── */
+async function loadGoal(){
+  try{
+    const{data,error}=await supabaseClient.from('navanga_config').select('*').eq('key','weekly_goal').maybeSingle();
+    if(!error&&data&&data.value) weeklyGoal=parseInt(data.value)||6;
+  }catch(e){console.warn('No se pudo cargar la meta semanal (¿existe la tabla navanga_config?):',e);}
+}
+document.getElementById('settings-btn').addEventListener('click',()=>{
+  document.getElementById('goal-input').value=weeklyGoal;
+  openModal('settings-modal');
+});
+document.getElementById('save-goal-btn').addEventListener('click',async()=>{
+  const v=parseInt(document.getElementById('goal-input').value)||6;
+  weeklyGoal=v;
+  try{
+    const{error}=await supabaseClient.from('navanga_config').upsert([{key:'weekly_goal',value:String(v)}]);
+    if(error) throw error;
+  }catch(e){alert('No se pudo guardar en Supabase (¿existe la tabla navanga_config?): '+e.message);}
+  updateStats();
+  closeModal('settings-modal');
+});
+
 /* ── MOON ── */
 function loadMoonPhases(){
   const all=[
@@ -802,7 +979,6 @@ function loadMoonPhases(){
   ];
   const now=new Date();
   moonPhases=all.filter(p=>p.date>=now).sort((a,b)=>a.date-b.date).slice(0,6);
-  // render modal content
   document.getElementById('moon-info').innerHTML=moonPhases.map(p=>{
     const icon=p.type==='Luna Llena'?'<i class="fa-regular fa-circle"></i>':'<i class="fa-solid fa-circle"></i>';
     return `<div class="moon-event">
@@ -812,7 +988,6 @@ function loadMoonPhases(){
       <div class="moon-time">${p.date.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}</div>
     </div>`;
   }).join('');
-  // now re-render today card so the moon box appears
   updateTodayCard();
 }
 document.getElementById('moon-btn').addEventListener('click',()=>openModal('moon-modal'));
@@ -830,11 +1005,11 @@ function updateTodayCard(){
   let html=`<div class="namaste-title"><i class="fa-solid fa-hands-praying"></i> NAMASTE</div>
     <div class="date-label">${dateLabel} — ${timeLabel}</div>`;
   if(entry){
-    const hasSP=(entry.moods||[]).some(m=>m.name==='special practice');
-    const status=hasSP?'Special Practice':(entry.practiced?'¡Practicaste hoy!':'Hoy no practicaste');
+    const st=getPState(entry);
+    const statusMap={si:'¡Practicaste hoy!',no:'Hoy no practicaste',sp:'Special Practice',moon:'Moon Day — sin práctica ashtanga',quote:'Solo nota de hoy'};
     const moodsHTML=(entry.moods||[]).map(m=>`<div class="mood-chip" style="background:${m.color}">${m.emoji}</div>`).join('');
     html+=`<div class="practice-box">
-      <div class="practice-status">${status}</div>
+      <div class="practice-status">${statusMap[st]}</div>
       <div class="mood-row">${moodsHTML}</div>
       ${entry.notes?`<div class="detail"><strong>Notas:</strong> ${entry.notes}</div>`:''}
       ${(entry.tags||[]).length?`<div class="detail"><strong>Tags:</strong> ${entry.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`:''}
@@ -843,10 +1018,9 @@ function updateTodayCard(){
     html+=`<div class="practice-box">
       <div class="practice-status">Hoy no practicaste</div>
       <p style="font-size:.82rem;margin:6px 0;">¿Querés registrar tu práctica?</p>
-      <button class="go-btn" id="open-log-today" style="margin-top:6px;">Registrar práctica</button>
+      <button class="go-btn edit-only" id="open-log-today" style="margin-top:6px;">Registrar práctica</button>
     </div>`;
   }
-  // next moon
   if(moonPhases.length){
     const next=moonPhases[0];
     const icon=next.type==='Luna Llena'?'<i class="fa-regular fa-circle"></i>':'<i class="fa-solid fa-circle"></i>';
@@ -860,7 +1034,7 @@ function updateTodayCard(){
   if(ob) ob.addEventListener('click',()=>showLogModal());
 }
 
-/* ── STATISTICS ── */
+/* ── PERIOD FILTER ── */
 function filterByPeriod(entries){
   const today=new Date();
   if(currentPeriod==='custom'&&customRange){
@@ -888,6 +1062,17 @@ function filterByPeriod(entries){
     default: return entries;
   }
 }
+function applyHFilters(entries){
+  return entries.filter(e=>{
+    if(hFilters.tags.length&&!(e.tags||[]).some(t=>hFilters.tags.includes(t))) return false;
+    if(hFilters.moods.length&&!(e.moods||[]).some(m=>hFilters.moods.includes(m.name))) return false;
+    if(hFilters.pstate&&hFilters.pstate!=='all'&&getPState(e)!==hFilters.pstate) return false;
+    return true;
+  });
+}
+function getFilteredEntries(){
+  return applyHFilters(filterByPeriod(logHistory));
+}
 function getISOWeek(d){
   const t=new Date(d),n=(d.getDay()+6)%7; t.setDate(t.getDate()-n+3);
   const f=t.valueOf(); t.setMonth(0,1);
@@ -899,8 +1084,7 @@ function weeklyAvg(entries){
   entries.forEach(e=>{
     const d=new Date(e.date),dw=d.getDay();
     if(dw<1||dw>5) return;
-    if((e.moods||[]).some(m=>m.name==='special practice')) return;
-    if(!e.practiced) return;
+    if(!countsAsPractice(e)) return;
     const key=`${d.getFullYear()}-${getISOWeek(d)}`;
     if(!weeks.has(key)) weeks.set(key,new Set());
     weeks.get(key).add(d.toDateString());
@@ -908,14 +1092,12 @@ function weeklyAvg(entries){
   if(!weeks.size) return 0;
   return [...weeks.values()].reduce((s,v)=>s+v.size,0)/weeks.size;
 }
+
+/* ── STATS + CHARTS ── */
 function updateStats(){
-  const filtered=filterByPeriod(logHistory);
-  const spDays=new Set(), yesDays=new Set();
-  filtered.forEach(e=>{
-    const ds=new Date(e.date).toDateString();
-    if((e.moods||[]).some(m=>m.name==='special practice')) spDays.add(ds);
-    else if(e.practiced) yesDays.add(ds);
-  });
+  const filtered=getFilteredEntries();
+  const counts={si:0,no:0,sp:0,moon:0,quote:0};
+  filtered.forEach(e=>counts[getPState(e)]++);
   const avg=weeklyAvg(filtered).toFixed(1);
   const months=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   const today=new Date();
@@ -923,11 +1105,12 @@ function updateStats(){
   if(currentPeriod==='month') label=`Mes de <b>${months[today.getMonth()]}</b>`;
   else if(currentPeriod==='year') label=`Año <b>${today.getFullYear()}</b>`;
   else if(currentPeriod==='week') label='Esta <b>semana</b>';
-  else if(currentPeriod==='custom'&&customRange) label=`Custom`;
-  document.getElementById('stats-summary').innerHTML=`${label} · <b>${avg} días/sem</b> · ${yesDays.size} prácticas · ${spDays.size} SP`;
+  else if(currentPeriod==='custom'&&customRange) label='Custom';
+  document.getElementById('stats-summary').innerHTML=
+    `${label} · <b>${avg}/${weeklyGoal} días/sem</b> · SÍ ${counts.si} · SP ${counts.sp} · MOON ${counts.moon} · QUOTE ${counts.quote} · NO ${counts.no}`;
   renderChart(getCatData(filtered,MOOD_CATS.moods),document.getElementById('mood-chart'));
-  renderChart(getCatData(filtered,MOOD_CATS.practice),document.getElementById('practice-chart'));
-  // also refresh history with same filter
+  renderChart(getCatData(filtered,MOOD_CATS.completion),document.getElementById('completion-chart'));
+  renderChart(getCatData(filtered,MOOD_CATS.styles),document.getElementById('style-chart'));
   displayLogHistory(filtered);
 }
 function getCatData(entries,cats){
@@ -950,7 +1133,7 @@ function renderChart(data,el){
   });
 }
 
-/* ── PERIOD BUTTONS ── */
+/* ── PERIOD PILLS (dentro del modal de filtro) ── */
 function setupPeriodBtns(){
   document.querySelectorAll('#period-pills .period-btn').forEach(btn=>{
     btn.addEventListener('click',function(){
@@ -959,52 +1142,34 @@ function setupPeriodBtns(){
       currentPeriod=this.dataset.period;
       const cdw=document.getElementById('custom-date-wrap');
       cdw.style.display=currentPeriod==='custom'?'block':'none';
-      if(currentPeriod!=='custom') updateStats();
     });
   });
-  document.getElementById('apply-custom').addEventListener('click',()=>{
-    const f=document.getElementById('custom-from').value;
-    const t=document.getElementById('custom-to').value;
-    if(!f||!t) return alert('Seleccioná ambas fechas');
-    customRange={from:new Date(f),to:new Date(t)};
-    updateStats();
-  });
-  // default dates
   const today=new Date(), ago=new Date(); ago.setDate(today.getDate()-30);
   document.getElementById('custom-from').valueAsDate=ago;
   document.getElementById('custom-to').valueAsDate=today;
 }
 
 /* ── LOG HISTORY ── */
-function applyHFilters(entries){
-  return entries.filter(e=>{
-    if(hFilters.tags.length&&!(e.tags||[]).some(t=>hFilters.tags.includes(t))) return false;
-    if(hFilters.moods.length&&!(e.moods||[]).some(m=>hFilters.moods.includes(m.name))) return false;
-    if(hFilters.practiced!==null&&e.practiced!==hFilters.practiced) return false;
-    return true;
-  });
-}
-function displayLogHistory(periodFiltered){
+function displayLogHistory(filtered){
   const container=document.getElementById('log-history');
-  // apply both period filter and hFilters
-  const base=periodFiltered||filterByPeriod(logHistory);
-  const filtered=applyHFilters([...base]).sort((a,b)=>new Date(b.date)-new Date(a.date));
-  if(!filtered.length){container.innerHTML='<div class="loading">Sin entradas que coincidan</div>';return;}
-  container.innerHTML=filtered.map(e=>{
+  const list=[...filtered].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(!list.length){container.innerHTML='<div class="loading">Sin entradas que coincidan</div>';return;}
+  container.innerHTML=list.map(e=>{
     const date=new Date(e.date).toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'}).replace(/\//g,'.');
     const moods=(e.moods||[]).map(m=>`<div class="mood-chip" style="background:${m.color}">${m.emoji}</div>`).join('');
     const tags=(e.tags||[]).length?`<div class="detail"><strong>Tags:</strong> ${e.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`:'';
     const asan=(e.asanas||[]).length?`<div class="detail"><strong>Āsanas:</strong> ${e.asanas.map(a=>`<span class="tag">${a.name}</span>`).join('')}</div>`:'';
+    const st=getPState(e), pi=PSTATE_INFO[st];
     return `<div class="history-entry" data-id="${e.id}">
       <div class="entry-header">
         <div class="entry-date">${date}</div>
         <div class="entry-actions">
-          <button class="icon-btn edit-entry-btn" data-id="${e.id}"><i class="fa-solid fa-pen"></i></button>
-          <button class="icon-btn delete-entry-btn" data-id="${e.id}"><i class="fa-solid fa-trash"></i></button>
+          <button class="icon-btn edit-only edit-entry-btn" data-id="${e.id}"><i class="fa-solid fa-pen"></i></button>
+          <button class="icon-btn edit-only delete-entry-btn" data-id="${e.id}"><i class="fa-solid fa-trash"></i></button>
         </div>
       </div>
       <div class="mood-row">
-        <div class="practice-dot ${e.practiced?'yes':'no'}">${e.practiced?'SÍ':'NO'}</div>
+        <div class="practice-dot" style="background:${pi.color}">${pi.label}</div>
         ${moods}
       </div>
       <div class="detail"><strong>Notas:</strong> ${e.notes||'—'}</div>
@@ -1035,7 +1200,7 @@ async function loadLogHistory(){
     return{...e,date:new Date(d.getFullYear(),d.getMonth(),d.getDate())};
   });
   updateStats();
-  loadMoonPhases(); // calls updateTodayCard internally after filling moonPhases
+  loadMoonPhases();
   await loadStudyStats();
   showRandomAsana();
 }
@@ -1047,22 +1212,25 @@ function setupHFilterModal(){
     updateFilterTagsList();
     openModal('hfilter-modal');
   });
-  // practice toggle
-  let pState=null;
-  const pt=document.getElementById('filter-practice-toggle');
-  pt.addEventListener('click',()=>{
-    if(pState===null){pState=true;pt.classList.remove('no');pt.classList.add('yes');pt.textContent='SÍ';}
-    else if(pState===true){pState=false;pt.classList.remove('yes');pt.classList.add('no');pt.textContent='NO';}
-    else{pState=null;pt.classList.remove('yes');pt.classList.add('no');pt.textContent='NO';}
-    hFilters.practiced=pState;
+  document.querySelectorAll('#practice-state-filter .period-btn').forEach(btn=>{
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('#practice-state-filter .period-btn').forEach(b=>b.classList.remove('active'));
+      this.classList.add('active');
+      hFilters.pstate=this.dataset.pstate;
+    });
   });
   document.getElementById('filter-tag-input').addEventListener('input',function(){updateFilterTagsList(this.value.toLowerCase());});
   document.getElementById('apply-hfilter').addEventListener('click',()=>{updateStats();updateFilterDot();closeModal('hfilter-modal');});
   document.getElementById('clear-hfilter').addEventListener('click',()=>{
-    hFilters={tags:[],moods:[],practiced:null};
-    pState=null; pt.classList.remove('yes'); pt.classList.add('no'); pt.textContent='NO';
+    hFilters={tags:[],moods:[],pstate:'all'};
     document.querySelectorAll('.filter-mood-item').forEach(i=>i.classList.remove('selected'));
+    document.querySelectorAll('#practice-state-filter .period-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelector('#practice-state-filter .period-btn[data-pstate="all"]').classList.add('active');
     document.getElementById('filter-tag-input').value='';
+    document.querySelectorAll('#period-pills .period-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelector('#period-pills .period-btn[data-period="month"]').classList.add('active');
+    currentPeriod='month';
+    document.getElementById('custom-date-wrap').style.display='none';
     updateFilterTagsList(); updateStats(); updateFilterDot(); closeModal('hfilter-modal');
   });
 }
@@ -1081,8 +1249,12 @@ function updateFilterTagsList(q=''){
   }));
 }
 function initFilterMoodBoard(){
+  // excluye special practice / moon day / quote: esos ahora se filtran por PRÁCTICA
+  const excluded=['special practice','moon day','quote'];
   const board=document.getElementById('filter-mood-board');
-  board.innerHTML=MOODS.map(m=>`<div class="filter-mood-item${hFilters.moods.includes(m.name)?' selected':''}" data-mood="${m.name}" style="background:${m.color}" title="${m.label}">${m.emoji}</div>`).join('');
+  board.innerHTML=MOODS.filter(m=>!excluded.includes(m.name)).map(m=>
+    `<div class="filter-mood-item${hFilters.moods.includes(m.name)?' selected':''}" data-mood="${m.name}" style="background:${m.color}" title="${m.label}">${m.emoji}</div>`
+  ).join('');
   board.querySelectorAll('.filter-mood-item').forEach(el=>el.addEventListener('click',()=>{
     el.classList.toggle('selected');
     const mn=el.dataset.mood,idx=hFilters.moods.indexOf(mn);
@@ -1091,7 +1263,7 @@ function initFilterMoodBoard(){
 }
 function updateFilterDot(){
   const btn=document.getElementById('history-filter-btn');
-  const has=hFilters.tags.length||hFilters.moods.length||hFilters.practiced!==null;
+  const has=hFilters.tags.length||hFilters.moods.length||(hFilters.pstate&&hFilters.pstate!=='all');
   const existing=btn.querySelector('.filters-dot');
   if(has&&!existing){const d=document.createElement('div');d.className='filters-dot';btn.appendChild(d);}
   else if(!has&&existing) existing.remove();
@@ -1111,22 +1283,22 @@ document.getElementById('clear-log-btn').addEventListener('click',clearLogForm);
 
 function clearLogForm(){
   currentLogEntry={id:null};
-  selectedMoods=[]; currentTags=[]; currentAsanas=[];
-  const pb=document.getElementById('practice-button');
-  pb.classList.remove('yes'); pb.classList.add('no'); pb.textContent='NO';
-  document.querySelectorAll('.mood-item').forEach(i=>i.classList.remove('selected'));
+  currentTags=[]; currentAsanas=[];
+  practiceCtrl.set('no'); moodCtrl.set(''); completionCtrl.set(''); styleCtrl.set('');
   document.getElementById('practice-date').valueAsDate=new Date();
   document.getElementById('practice-notes').value='';
   updateTagsDisplay(); updateAsanasDisplay();
 }
 function loadEntryIntoForm(entry){
   currentLogEntry={...entry};
-  const pb=document.getElementById('practice-button');
-  if(entry.practiced){pb.classList.add('yes');pb.classList.remove('no');pb.textContent='SÍ';}
-  (entry.moods||[]).forEach(mood=>{
-    const idx=MOODS.findIndex(m=>m.name===mood.name);
-    if(idx!==-1){selectedMoods.push(idx);document.querySelector(`.mood-item[data-index="${idx}"]`)?.classList.add('selected');}
-  });
+  practiceCtrl.set(getPState(entry));
+  const moods=entry.moods||[];
+  const moodMatch=moods.find(m=>MOOD_CATS.moods.includes(m.name));
+  moodCtrl.set(moodMatch?moodMatch.name:'');
+  const compMatch=moods.find(m=>MOOD_CATS.completion.includes(m.name));
+  completionCtrl.set(compMatch?compMatch.name:'');
+  const styleMatch=moods.find(m=>MOOD_CATS.styles.includes(m.name));
+  styleCtrl.set(styleMatch?styleMatch.name:'');
   if(entry.date){document.getElementById('practice-date').valueAsDate=new Date(entry.date);}
   document.getElementById('practice-notes').value=entry.notes||'';
   currentTags=[...(entry.tags||[])]; updateTagsDisplay();
@@ -1137,11 +1309,10 @@ async function saveLogEntry(){
   let entryDate;
   if(dateVal){const[y,mo,d]=dateVal.split('-');entryDate=new Date(y,mo-1,d);}
   else{const n=new Date();entryDate=new Date(n.getFullYear(),n.getMonth(),n.getDate());}
-  const pb=document.getElementById('practice-button');
   const entryData={
     date:entryDate.toISOString(),
-    practiced:pb.classList.contains('yes'),
-    moods:selectedMoods.map(i=>MOODS[i]),
+    practiced:getPracticedBool(),
+    moods:buildMoodsArray(),
     notes:document.getElementById('practice-notes').value,
     tags:[...currentTags],asanas:[...currentAsanas],
   };
@@ -1153,21 +1324,6 @@ async function saveLogEntry(){
     closeModal('log-modal');
     alert(currentLogEntry.id?'Entrada actualizada':'Entrada guardada');
   }catch(e){alert('Error: '+e.message);}
-}
-
-/* ── MOOD BOARD (form) ── */
-function initMoodBoard(){
-  const board=document.getElementById('mood-board');
-  board.innerHTML=MOODS.map((m,i)=>`<div class="mood-item" data-index="${i}" style="background:${m.color}" title="${m.label}">${m.emoji}</div>`).join('');
-  board.querySelectorAll('.mood-item').forEach(el=>el.addEventListener('click',()=>{
-    const idx=parseInt(el.dataset.index);
-    if(selectedMoods.includes(idx)){selectedMoods=selectedMoods.filter(i=>i!==idx);el.classList.remove('selected');}
-    else{selectedMoods.push(idx);el.classList.add('selected');}
-  }));
-  document.getElementById('practice-button').addEventListener('click',function(){
-    this.classList.toggle('yes'); this.classList.toggle('no');
-    this.textContent=this.classList.contains('yes')?'SÍ':'NO';
-  });
 }
 
 /* ── TAG SEARCH ── */
@@ -1394,13 +1550,13 @@ async function displayAsanaNotes(asana,cnt){
   if(data){
     const d=new Date(data.updated_at).toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
     cnt.innerHTML=`<div class="note-content">${data.note}</div><div class="note-meta">Última edición: ${d}</div>
-      <div class="note-actions">
+      <div class="note-actions edit-only">
         <button class="note-btn blue" data-id="${asana.id}">Editar</button>
         <button class="note-btn red" data-id="${asana.id}">Eliminar</button>
       </div>`;
   } else {
     cnt.innerHTML=`<textarea class="note-textarea" placeholder="Notas personales..."></textarea>
-      <div class="note-actions"><button class="note-btn" data-id="${asana.id}">Guardar</button></div>`;
+      <div class="note-actions edit-only"><button class="note-btn" data-id="${asana.id}">Guardar</button></div>`;
   }
   cnt.addEventListener('click',async e=>{
     const id=e.target.dataset.id; if(!id) return;
@@ -1411,7 +1567,7 @@ async function displayAsanaNotes(asana,cnt){
     } else if(e.target.classList.contains('blue')){
       const existing=cnt.querySelector('.note-content')?.textContent||'';
       cnt.innerHTML=`<textarea class="note-textarea">${existing}</textarea>
-        <div class="note-actions"><button class="note-btn" data-id="${id}">Guardar</button><button class="note-btn red cancel-note">Cancelar</button></div>`;
+        <div class="note-actions edit-only"><button class="note-btn" data-id="${id}">Guardar</button><button class="note-btn red cancel-note">Cancelar</button></div>`;
       cnt.querySelector('.cancel-note').addEventListener('click',()=>displayAsanaNotes(asana,cnt));
     } else if(e.target.classList.contains('red')&&!e.target.classList.contains('cancel-note')){
       if(confirm('¿Eliminar nota?')){await supabaseClient.from('navanga_notes').delete().eq('asana_id',id);displayAsanaNotes(asana,cnt);}
@@ -1468,8 +1624,8 @@ function displayLinks(){
       </div>
       <div class="link-card-actions">
         <a class="link-open-btn" href="${l.url}" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir</a>
-        <button class="icon-btn edit-link-btn" data-id="${l.id}" title="Editar"><i class="fa-solid fa-pen"></i></button>
-        <button class="icon-btn delete-link-btn" data-id="${l.id}" title="Eliminar" style="background:var(--red);"><i class="fa-solid fa-trash"></i></button>
+        <button class="icon-btn edit-only edit-link-btn" data-id="${l.id}" title="Editar"><i class="fa-solid fa-pen"></i></button>
+        <button class="icon-btn edit-only delete-link-btn" data-id="${l.id}" title="Eliminar" style="background:var(--red);"><i class="fa-solid fa-trash"></i></button>
       </div>
     </div>`).join('');
   container.querySelectorAll('.delete-link-btn').forEach(btn=>btn.addEventListener('click',async()=>{
@@ -1552,10 +1708,12 @@ document.getElementById('clear-link-filter').addEventListener('click',()=>{
 
 /* ── INIT ── */
 document.addEventListener('DOMContentLoaded',async()=>{
-  initMoodBoard();
+  updateLockUI();
+  initCyclicButtons();
   setupTagSearch();
   setupPeriodBtns();
   setupHFilterModal();
+  await loadGoal();
   await loadAsanasFromCSV();
   setupAsanaSearch();
   displayAsanasList();
