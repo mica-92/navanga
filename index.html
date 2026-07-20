@@ -8,7 +8,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.0/dist/umd/supabase.js"></script><style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
 :root{
   --orange:#f6732f;--yellow:#f8dc3d;--yl:#f3f62f20;
   --green:#a6b39a;--green6:#515b44;--light:#feeed5;
@@ -589,14 +590,15 @@ const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 const CORRECT_PIN='2302';
 let isUnlocked=false;
 function applyLockState(){
-  // toggle locked-hide buttons (+ new entry etc)
-  document.querySelectorAll('.locked-hide').forEach(el=>{el.style.display=isUnlocked?'flex':'none';});
+  document.querySelectorAll('.locked-hide').forEach(el=>{
+    el.style.display=isUnlocked?'flex':'none';
+  });
   const lb=document.getElementById('lock-btn');
   lb.innerHTML=isUnlocked?'<i class="fa-solid fa-lock-open"></i>':'<i class="fa-solid fa-lock"></i>';
   lb.className='lock-btn'+(isUnlocked?' unlocked':'');
-  // re-render dynamic content that depends on lock state
-  if(logHistory.length) updateStats();
-  if(linksData.length) displayLinks();
+  // force re-render of history entries and links so edit/delete buttons toggle
+  displayLogHistory();
+  displayLinks();
 }
 document.getElementById('lock-btn').addEventListener('click',()=>{
   if(isUnlocked){isUnlocked=false;applyLockState();}
@@ -605,10 +607,11 @@ document.getElementById('lock-btn').addEventListener('click',()=>{
 document.getElementById('pin-submit').addEventListener('click',()=>{
   const val=document.getElementById('pin-input').value;
   if(val===CORRECT_PIN){
-    isUnlocked=true;applyLockState();
+    isUnlocked=true;
     document.getElementById('pin-overlay').classList.remove('open');
     document.getElementById('pin-input').value='';
     document.getElementById('pin-error').style.display='none';
+    applyLockState();
   } else {
     document.getElementById('pin-error').style.display='block';
     document.getElementById('pin-input').value='';
