@@ -46,7 +46,8 @@ main{max-width:600px;margin:0 auto;padding:calc(var(--hh)+16px) 16px calc(var(--
 .burger-btn.open{transform:rotate(90deg);background:var(--yellow);}
 .menu-items{position:absolute;bottom:60px;left:0;display:flex;flex-direction:column-reverse;gap:8px;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .2s,transform .2s;}
 .menu-items.open{opacity:1;pointer-events:all;transform:translateY(0);}
-.menu-item{display:flex;align-items:center;gap:8px;white-space:nowrap;}
+/* label goes to the RIGHT of the icon button */
+.menu-item{display:flex;align-items:center;flex-direction:row;gap:8px;white-space:nowrap;}
 .menu-item-btn{width:40px;height:40px;border-radius:50%;border:2px solid #333;background:var(--green6);color:#fff;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 rgba(0,0,0,.2);transition:background .15s;flex-shrink:0;}
 .menu-item-btn:hover,.menu-item-btn.active{background:var(--bordo);}
 .menu-item-label{background:#333;color:var(--light);padding:3px 9px;font-size:.72rem;font-weight:bold;border-radius:3px;text-transform:uppercase;letter-spacing:.5px;}
@@ -589,10 +590,14 @@ const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 const CORRECT_PIN='2302';
 let isUnlocked=false;
 function applyLockState(){
+  // toggle locked-hide buttons (+ new entry etc)
   document.querySelectorAll('.locked-hide').forEach(el=>{el.style.display=isUnlocked?'flex':'none';});
   const lb=document.getElementById('lock-btn');
   lb.innerHTML=isUnlocked?'<i class="fa-solid fa-lock-open"></i>':'<i class="fa-solid fa-lock"></i>';
   lb.className='lock-btn'+(isUnlocked?' unlocked':'');
+  // re-render dynamic content that depends on lock state
+  if(logHistory.length) updateStats();
+  if(linksData.length) displayLinks();
 }
 document.getElementById('lock-btn').addEventListener('click',()=>{
   if(isUnlocked){isUnlocked=false;applyLockState();}
@@ -736,16 +741,18 @@ const MOOD_MAP={
 let weeklyGoal=5;
 async function loadGoal(){
   try{
-    const{data}=await supabaseClient.from('navanga_config').select('value').eq('key','weekly_goal').single();
-    if(data) weeklyGoal=parseInt(data.value)||5;
-  }catch(e){}
+    const{data,error}=await supabaseClient.from('navanga_config').select('value').eq('key','weekly_goal').maybeSingle();
+    if(!error&&data) weeklyGoal=parseInt(data.value)||5;
+  }catch(e){/* table may not exist yet */}
   document.getElementById('goal-input').value=weeklyGoal;
 }
 document.getElementById('settings-btn').addEventListener('click',async()=>{await loadGoal();openModal('settings-modal');});
 document.getElementById('save-goal-btn').addEventListener('click',async()=>{
   const val=parseInt(document.getElementById('goal-input').value)||5;
   weeklyGoal=val;
-  try{await supabaseClient.from('navanga_config').upsert([{key:'weekly_goal',value:String(val)}]);}catch(e){}
+  try{
+    await supabaseClient.from('navanga_config').upsert([{key:'weekly_goal',value:String(val),updated_at:new Date().toISOString()}]);
+  }catch(e){console.warn('navanga_config not available, goal saved in memory only');}
   updateStats();closeModal('settings-modal');
 });
 
