@@ -1170,7 +1170,7 @@ async function displayAsanaNotes(asana,cnt){
       <div class="note-actions"><button class="note-btn blue" data-id="${asana.id}">Editar</button><button class="note-btn red" data-id="${asana.id}">Eliminar</button></div>`;
   }else{
     cnt.innerHTML=`<textarea class="note-textarea" placeholder="Notas personales..."></textarea>
-      <div class="note-actions"><button class="note-btn" data-id="${asana.id}">Guardar</button></div>`:'<div style="font-size:.78rem;color:#666;">Sin notas · Desbloqueá para agregar</div>';
+      <div class="note-actions"><button class="note-btn" data-id="${asana.id}">Guardar</button></div>`;
   }
   cnt.addEventListener('click',async e=>{
     const id=e.target.dataset.id;if(!id)return;
@@ -1239,7 +1239,6 @@ async function loadAsanasFromCSV(){
 
 /* ── INIT ── */
 document.addEventListener('DOMContentLoaded',async()=>{
-  document.body.classList.add('locked');
   setupHFilterModal();
   setupTagSearch();
   await loadAsanasFromCSV();
