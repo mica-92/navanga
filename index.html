@@ -1548,7 +1548,7 @@ async function displayAsanaNotes(asana,cnt){
   cnt.innerHTML='<div class="loading">Cargando...</div>';
   let data=null;
   try{
-    const res=await supabaseClient.from('navanga_notes').select('*').eq('asana_id',asana.id).single();
+    const res=await supabaseClient.from('navanga_notes').select('*').eq('asana_id',asana.id).maybeSingle();
     data=res.data;
   }catch(e){data=null;}
   if(data){
