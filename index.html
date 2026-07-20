@@ -34,6 +34,17 @@ header{position:fixed;top:0;left:0;right:0;height:var(--hh);background:var(--ora
 .site-title{font-size:2rem;color:#333;text-transform:uppercase;white-space:nowrap;}
 .lock-btn{width:30px;height:30px;border-radius:50%;border:var(--b2);background:#333;color:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
 .lock-btn.unlocked{background:var(--green6);color:#fff;}
+/* Lock state via CSS on body — no JS re-render needed */
+.locked-hide{display:none!important;}
+body.unlocked .locked-hide{display:flex!important;}
+body.locked .edit-entry-btn,
+body.locked .delete-entry-btn,
+body.locked .edit-link-btn,
+body.locked .delete-link-btn{display:none!important;}
+body.unlocked .edit-entry-btn,
+body.unlocked .delete-entry-btn,
+body.unlocked .edit-link-btn,
+body.unlocked .delete-link-btn{display:flex!important;}
 footer{position:fixed;bottom:0;left:0;right:0;height:var(--fh);background:var(--yellow);border-top:var(--b2);display:flex;align-items:center;justify-content:center;padding:0 80px 0 20px;z-index:900;}
 .footer-credit{font-size:.65rem;color:#333;text-align:center;}
 main{max-width:600px;margin:0 auto;padding:calc(var(--hh)+16px) 16px calc(var(--fh)+16px);scrollbar-width:thin;scrollbar-color:var(--bordo) transparent;}
@@ -590,15 +601,11 @@ const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 const CORRECT_PIN='2302';
 let isUnlocked=false;
 function applyLockState(){
-  document.querySelectorAll('.locked-hide').forEach(el=>{
-    el.style.display=isUnlocked?'flex':'none';
-  });
+  document.body.classList.toggle('unlocked', isUnlocked);
+  document.body.classList.toggle('locked', !isUnlocked);
   const lb=document.getElementById('lock-btn');
   lb.innerHTML=isUnlocked?'<i class="fa-solid fa-lock-open"></i>':'<i class="fa-solid fa-lock"></i>';
   lb.className='lock-btn'+(isUnlocked?' unlocked':'');
-  // force re-render of history entries and links so edit/delete buttons toggle
-  displayLogHistory();
-  displayLinks();
 }
 document.getElementById('lock-btn').addEventListener('click',()=>{
   if(isUnlocked){isUnlocked=false;applyLockState();}
@@ -915,13 +922,12 @@ function displayLogHistory(periodFiltered){
     const stylesHTML=(e.moods||[]).filter(m=>!moodNames.includes(m.name)&&m.name!=='special practice'&&m.name!=='moon day').map(m=>`<div class="mood-chip" style="background:${MOOD_MAP[m.name]?.color||'#999'}">${MOOD_MAP[m.name]?.emoji||''}</div>`).join('');
     const tags=(e.tags||[]).length?`<div class="detail"><strong>Tags:</strong> ${e.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`:'';
     const asan=(e.asanas||[]).length?`<div class="detail"><strong>Āsanas:</strong> ${e.asanas.map(a=>`<span class="tag">${a.name}</span>`).join('')}</div>`:'';
-    const editClass=isUnlocked?'':'style="display:none"';
+    const editActions=`
+        <button class="icon-btn edit-entry-btn" data-id="${e.id}"><i class="fa-solid fa-pen"></i></button>
+        <button class="icon-btn delete-entry-btn" data-id="${e.id}" style="background:var(--red);"><i class="fa-solid fa-trash"></i></button>`;
     return`<div class="history-entry"><div class="entry-header">
       <div class="entry-date">${date}</div>
-      <div class="entry-actions">
-        <button class="icon-btn edit-entry-btn" data-id="${e.id}" ${editClass}><i class="fa-solid fa-pen"></i></button>
-        <button class="icon-btn delete-entry-btn" data-id="${e.id}" style="background:var(--red);${isUnlocked?'':'display:none'}"><i class="fa-solid fa-trash"></i></button>
-      </div></div>
+      <div class="entry-actions">${editActions}</div></div>
       <div class="mood-row"><div class="practice-dot ${dotClass}">${dotText}</div>${moodsHTML}${stylesHTML}</div>
       <div class="detail"><strong>Notas:</strong> ${e.notes||'—'}</div>${tags}${asan}
     </div>`;
@@ -1255,8 +1261,8 @@ function displayLinks(){
     <div class="link-card-info"><div class="link-card-name">${l.name||'Sin nombre'}</div>${l.theme?`<div class="link-card-theme"><i class="fa-solid fa-tag"></i> ${l.theme}</div>`:''}</div>
     <div class="link-card-actions">
       <a class="link-open-btn" href="${l.url}" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
-      ${isUnlocked?`<button class="icon-btn edit-link-btn" data-id="${l.id}"><i class="fa-solid fa-pen"></i></button>
-      <button class="icon-btn delete-link-btn" data-id="${l.id}" style="background:var(--red);"><i class="fa-solid fa-trash"></i></button>`:''}
+      <button class="icon-btn edit-link-btn" data-id="${l.id}"><i class="fa-solid fa-pen"></i></button>
+      <button class="icon-btn delete-link-btn" data-id="${l.id}" style="background:var(--red);"><i class="fa-solid fa-trash"></i></button>
     </div></div>`).join('');
   container.querySelectorAll('.delete-link-btn').forEach(btn=>btn.addEventListener('click',async()=>{if(!confirm('¿Eliminar este link?'))return;await supabaseClient.from('navanga_links').delete().eq('id',btn.dataset.id);linksData=linksData.filter(l=>l.id.toString()!==btn.dataset.id);displayLinks();updateLinkThemeChips();updateLinkFilterDot();}));
   container.querySelectorAll('.edit-link-btn').forEach(btn=>btn.addEventListener('click',()=>{const link=linksData.find(l=>l.id.toString()===btn.dataset.id);if(link)showLinkModal(link);}));
@@ -1291,6 +1297,7 @@ async function loadAsanasFromCSV(){
 
 /* ── INIT ── */
 document.addEventListener('DOMContentLoaded',async()=>{
+  document.body.classList.add('locked');
   applyLockState();
   setupHFilterModal();
   setupTagSearch();
