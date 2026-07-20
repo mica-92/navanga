@@ -32,19 +32,7 @@ header{position:fixed;top:0;left:0;right:0;height:var(--hh);background:var(--ora
 .header-inner{display:flex;align-items:center;gap:10px;width:100%;max-width:640px;}
 .line{flex:1;height:2px;background:#333;}
 .site-title{font-size:2rem;color:#333;text-transform:uppercase;white-space:nowrap;}
-.lock-btn{width:30px;height:30px;border-radius:50%;border:var(--b2);background:#333;color:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
-.lock-btn.unlocked{background:var(--green6);color:#fff;}
-/* Lock state via CSS on body — no JS re-render needed */
-.locked-hide{display:none!important;}
-body.unlocked .locked-hide{display:flex!important;}
-body.locked .edit-entry-btn,
-body.locked .delete-entry-btn,
-body.locked .edit-link-btn,
-body.locked .delete-link-btn{display:none!important;}
-body.unlocked .edit-entry-btn,
-body.unlocked .delete-entry-btn,
-body.unlocked .edit-link-btn,
-body.unlocked .delete-link-btn{display:flex!important;}
+.lock-btn{display:none;}
 footer{position:fixed;bottom:0;left:0;right:0;height:var(--fh);background:var(--yellow);border-top:var(--b2);display:flex;align-items:center;justify-content:center;padding:0 80px 0 20px;z-index:900;}
 .footer-credit{font-size:.65rem;color:#333;text-align:center;}
 main{max-width:600px;margin:0 auto;padding:calc(var(--hh)+16px) 16px calc(var(--fh)+16px);scrollbar-width:thin;scrollbar-color:var(--bordo) transparent;}
@@ -72,7 +60,7 @@ main{max-width:600px;margin:0 auto;padding:calc(var(--hh)+16px) 16px calc(var(--
 .topbar-actions{display:flex;gap:6px;}
 .icon-btn{width:28px;height:28px;border-radius:50%;border:var(--b2);background:var(--green6);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:background .15s;flex-shrink:0;}
 .icon-btn:hover{background:var(--yellow);color:#333;}
-.icon-btn.locked-hide{display:none;}
+
 
 /* ── TODAY ── */
 .namaste-title{font-size:1.6rem;color:var(--green6);font-weight:800;margin-bottom:6px;}
@@ -234,12 +222,7 @@ main{max-width:600px;margin:0 auto;padding:calc(var(--hh)+16px) 16px calc(var(--
 .section-divider{border:none;border-top:2px solid var(--bordo);margin:16px 0;}
 .custom-date-wrap{display:none;margin-bottom:10px;}
 .date-row{display:flex;gap:8px;}.date-row>div{flex:1;}
-.pin-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:3000;align-items:center;justify-content:center;}
-.pin-overlay.open{display:flex;}
-.pin-box{background:var(--light);border:var(--b2);border-radius:6px;padding:24px;text-align:center;width:260px;}
 .pin-title{font-weight:bold;font-size:1rem;margin-bottom:12px;color:var(--green6);}
-.pin-input{width:100%;padding:10px;border:var(--b2);background:var(--yellow);font-size:1.2rem;letter-spacing:8px;text-align:center;margin-bottom:10px;}
-.pin-error{color:var(--red);font-size:.75rem;margin-top:4px;display:none;}
 </style>
 </head>
 <body>
@@ -249,7 +232,6 @@ main{max-width:600px;margin:0 auto;padding:calc(var(--hh)+16px) 16px calc(var(--
     <div class="line"></div>
     <div class="site-title">Navāṅga</div>
     <div class="line"></div>
-    <button class="lock-btn" id="lock-btn" title="Desbloquear edición"><i class="fa-solid fa-lock"></i></button>
   </div>
 </header>
 
@@ -261,7 +243,7 @@ main{max-width:600px;margin:0 auto;padding:calc(var(--hh)+16px) 16px calc(var(--
     <span class="topbar-title">Bitácora de Hoy</span>
     <div class="topbar-actions">
       <button class="icon-btn" id="moon-btn"><i class="fa-solid fa-moon"></i></button>
-      <button class="icon-btn locked-hide" id="new-log-btn"><i class="fa-solid fa-plus"></i></button>
+      <button class="icon-btn" id="new-log-btn"><i class="fa-solid fa-plus"></i></button>
     </div>
   </div>
   <div id="today-content"><div class="loading">Cargando...</div></div>
@@ -274,7 +256,7 @@ main{max-width:600px;margin:0 auto;padding:calc(var(--hh)+16px) 16px calc(var(--
     <div class="topbar-actions">
       <button class="icon-btn" id="settings-btn" title="Configuración"><i class="fa-solid fa-gear"></i></button>
       <button class="icon-btn" style="position:relative;" id="history-filter-btn"><i class="fa-solid fa-filter"></i></button>
-      <button class="icon-btn locked-hide" id="new-log-btn2"><i class="fa-solid fa-plus"></i></button>
+      <button class="icon-btn" id="new-log-btn2"><i class="fa-solid fa-plus"></i></button>
     </div>
   </div>
   <div class="stats-summary" id="stats-summary"></div>
@@ -323,7 +305,7 @@ main{max-width:600px;margin:0 auto;padding:calc(var(--hh)+16px) 16px calc(var(--
     <span class="topbar-title">Karaṇḍa</span>
     <div class="topbar-actions">
       <button class="icon-btn" style="position:relative;" id="link-filter-btn"><i class="fa-solid fa-filter"></i></button>
-      <button class="icon-btn locked-hide" id="new-link-btn"><i class="fa-solid fa-plus"></i></button>
+      <button class="icon-btn" id="new-link-btn"><i class="fa-solid fa-plus"></i></button>
     </div>
   </div>
   <div id="links-list"><div class="loading">Cargando...</div></div>
@@ -345,16 +327,6 @@ main{max-width:600px;margin:0 auto;padding:calc(var(--hh)+16px) 16px calc(var(--
 </div>
 
 <!-- ═══ MODALS ═══ -->
-
-<!-- PIN overlay -->
-<div class="pin-overlay" id="pin-overlay">
-  <div class="pin-box">
-    <div class="pin-title"><i class="fa-solid fa-lock"></i> Ingresá el PIN</div>
-    <input type="password" class="pin-input" id="pin-input" maxlength="4" placeholder="••••" inputmode="numeric">
-    <div class="pin-error" id="pin-error">PIN incorrecto</div>
-    <button class="go-btn" id="pin-submit" style="width:100%;margin-top:8px;">DESBLOQUEAR</button>
-  </div>
-</div>
 
 <!-- Moon -->
 <div class="modal" id="moon-modal">
@@ -596,36 +568,6 @@ main{max-width:600px;margin:0 auto;padding:calc(var(--hh)+16px) 16px calc(var(--
 const SUPABASE_URL='https://fljzhgfmgswqxhatezhn.supabase.co';
 const SUPABASE_ANON='sb_publishable_mPSg2RcST_3rw3wYrfO-5A_Uta3Nj12';
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
-
-/* ── PIN / LOCK ── */
-const CORRECT_PIN='2302';
-let isUnlocked=false;
-function applyLockState(){
-  document.body.classList.toggle('unlocked', isUnlocked);
-  document.body.classList.toggle('locked', !isUnlocked);
-  const lb=document.getElementById('lock-btn');
-  lb.innerHTML=isUnlocked?'<i class="fa-solid fa-lock-open"></i>':'<i class="fa-solid fa-lock"></i>';
-  lb.className='lock-btn'+(isUnlocked?' unlocked':'');
-}
-document.getElementById('lock-btn').addEventListener('click',()=>{
-  if(isUnlocked){isUnlocked=false;applyLockState();}
-  else document.getElementById('pin-overlay').classList.add('open');
-});
-document.getElementById('pin-submit').addEventListener('click',()=>{
-  const val=document.getElementById('pin-input').value;
-  if(val===CORRECT_PIN){
-    isUnlocked=true;
-    document.getElementById('pin-overlay').classList.remove('open');
-    document.getElementById('pin-input').value='';
-    document.getElementById('pin-error').style.display='none';
-    applyLockState();
-  } else {
-    document.getElementById('pin-error').style.display='block';
-    document.getElementById('pin-input').value='';
-  }
-});
-document.getElementById('pin-input').addEventListener('keydown',e=>{if(e.key==='Enter') document.getElementById('pin-submit').click();});
-document.getElementById('pin-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget){e.currentTarget.classList.remove('open');document.getElementById('pin-input').value='';document.getElementById('pin-error').style.display='none';}});
 
 /* ── MODALS ── */
 function openModal(id){document.getElementById(id).classList.add('open');}
@@ -1225,9 +1167,9 @@ async function displayAsanaNotes(asana,cnt){
   if(data){
     const d=new Date(data.updated_at).toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
     cnt.innerHTML=`<div class="note-content">${data.note}</div><div class="note-meta">Última edición: ${d}</div>
-      <div class="note-actions">${isUnlocked?`<button class="note-btn blue" data-id="${asana.id}">Editar</button><button class="note-btn red" data-id="${asana.id}">Eliminar</button>`:''}</div>`;
+      <div class="note-actions"><button class="note-btn blue" data-id="${asana.id}">Editar</button><button class="note-btn red" data-id="${asana.id}">Eliminar</button></div>`;
   }else{
-    cnt.innerHTML=isUnlocked?`<textarea class="note-textarea" placeholder="Notas personales..."></textarea>
+    cnt.innerHTML=`<textarea class="note-textarea" placeholder="Notas personales..."></textarea>
       <div class="note-actions"><button class="note-btn" data-id="${asana.id}">Guardar</button></div>`:'<div style="font-size:.78rem;color:#666;">Sin notas · Desbloqueá para agregar</div>';
   }
   cnt.addEventListener('click',async e=>{
@@ -1298,7 +1240,6 @@ async function loadAsanasFromCSV(){
 /* ── INIT ── */
 document.addEventListener('DOMContentLoaded',async()=>{
   document.body.classList.add('locked');
-  applyLockState();
   setupHFilterModal();
   setupTagSearch();
   await loadAsanasFromCSV();
